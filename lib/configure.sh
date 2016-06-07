@@ -21,7 +21,7 @@
 # $2 - [OPTIONAL] which sub component to build, gcc stage, gdbserver, binutils, etc...
 configure_build()
 {
-    trace "$*"
+#    trace "$*"
 
     local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
 

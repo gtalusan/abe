@@ -243,7 +243,7 @@ create_release_version()
 # returns "version~branch@revision"
 create_release_tag()
 {
-    trace "$*"
+#    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "`component_is_tar ${component}`" = no; then

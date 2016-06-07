@@ -20,14 +20,14 @@
 
 build_deb()
 {
-    trace "$*"
+#    trace "$*"
 
     warning "unimplemented"
 }
 
 build_rpm()
 {
-    trace "$*"
+#    trace "$*"
 
     local infile="${abe_path}/packaging/redhat/tcwg.spec.in"
     local arch="`echo ${target} | tr '-' '_'`"
@@ -52,7 +52,7 @@ build_rpm()
 # $1 - the top level path to files to cleanup for a source release
 sanitize()
 {
-    trace "$*"
+#    trace "$*"
 
     # the files left from random file editors we don't want.
     local edits="`find $1/ -name \*~ -o -name \.\#\* -o -name \*.bak -o -name x`"
@@ -76,7 +76,7 @@ sanitize()
 # listdc++, and gfortran.
 binary_runtime()
 {
-    trace "$*"
+#    trace "$*"
 
     local rtag="`create_release_tag gcc`"
     local tag="runtime-${rtag}-${target}"
@@ -108,7 +108,7 @@ binary_runtime()
 
 binary_gdb()
 {
-    trace "$*"
+#    trace "$*"
 
     local version="`${target}-gdb --version | head -1 | grep -o " [0-9\.][0-9].*\." | tr -d ')'`"
     local tag="`create_release_tag ${gdb_version} | sed -e 's:binutils-::'`"
@@ -148,7 +148,7 @@ binary_gdb()
 # e.g artifact_20130906-12-245f0869.tar.xz
 binary_toolchain()
 {
-    trace "$*"
+#    trace "$*"
 
     local rtag="`create_release_tag gcc`"
 
@@ -198,7 +198,7 @@ binary_toolchain()
 
 binary_sysroot()
 {
-    trace "$*"
+#    trace "$*"
 
     local rtag="`create_release_tag glibc`"
     local tag="sysroot-${rtag}-${target}"
@@ -224,7 +224,7 @@ binary_sysroot()
 # used for this build.
 manifest()
 {
-    trace "$*"
+#    trace "$*"
 
     # This function relies too heavily on the built toolchain to do anything
     # in dryrun mode.
@@ -388,7 +388,7 @@ EOF
 # $1 - the version to use, usually something like 2013.07-2
 binutils_src_tarball()
 {
-    trace "$*"
+#    trace "$*"
 
     local version="`${target}-ld --version | head -1 | cut -d ' ' -f 5 | cut -d '.' -f 1-3`"
 

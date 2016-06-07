@@ -19,7 +19,7 @@
 # This performs all the steps to build a full cross toolchain
 build_all()
 {
-    trace "$*"
+#    trace "$*"
     
     # Turn off dependency checking, as everything is handled here
     nodepends=yes
@@ -261,7 +261,7 @@ build_all()
 
 build()
 {
-    trace "$*"
+#    trace "$*"
 
     local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
  
@@ -437,7 +437,7 @@ build()
 
 make_all()
 {
-    trace "$*"
+#    trace "$*"
 
     local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
 
@@ -554,7 +554,7 @@ find_dynamic_linker()
 
 make_install()
 {
-    trace "$*"
+#    trace "$*"
 
     local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
 
@@ -664,7 +664,7 @@ make_install()
 # $2 - If set to anything, installed tools are used'
 make_check()
 {
-    trace "$*"
+#    trace "$*"
 
     local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
     local builddir="`get_component_builddir ${component}`${2:+-$2}"
@@ -809,7 +809,7 @@ make_check()
 
 make_clean()
 {
-    trace "$*"
+#    trace "$*"
 
     builddir="`get_component_builddir $1 ${2:+$2}`"
     notice "Making clean in ${builddir}"
@@ -829,7 +829,7 @@ make_clean()
 
 make_docs()
 {
-    trace "$*"
+#    trace "$*"
 
     local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
     local builddir="`get_component_builddir ${component}`${2:+-$2}"
@@ -879,7 +879,7 @@ make_docs()
 # See if we can link a simple executable
 hello_world()
 {
-    trace "$*"
+#    trace "$*"
 
     if test ! -e /tmp/hello.cpp; then
     # Create the usual Hello World! test case
