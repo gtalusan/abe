@@ -20,7 +20,7 @@
 # function, not in the fetch_<protocol> functions to avoid redundancy.
 fetch()
 {
-    trace "$*"
+#    trace "$*"
 
     if test x"$1" = x; then
 	error "No file name specified to fetch!"
@@ -85,7 +85,7 @@ fetch()
 # decompress and untar a fetched tarball
 extract()
 {
-    trace "$*"
+#    trace "$*"
 
     local extractor=
     local taropt=
@@ -179,7 +179,7 @@ extract()
 # on the server is newer than the destination file.
 fetch_http()
 {
-    trace "$*"
+#    trace "$*"
 
     local component=$1
     local getfile="`get_component_filespec ${component}`"
@@ -252,7 +252,7 @@ fetch_http()
 # whether it is newer or not.
 fetch_reference()
 {
-    trace "$*"
+#    trace "$*"
 
     local getfile=$1
     local url="`get_component_url ${getfile}`"
@@ -300,7 +300,7 @@ fetch_reference()
 # the actual file's downloaded md5sum.
 check_md5sum()
 {
-    trace "$*"
+#    trace "$*"
 
     local tool="`basename $1`"
 

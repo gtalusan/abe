@@ -28,7 +28,7 @@ usegit=no
 # nothing else.
 checkout_all()
 {
-    trace "$*"
+#    trace "$*"
 
     local packages="$*"
 
@@ -138,7 +138,7 @@ git_robust()
 #       have a git identifier call get_URL first.
 checkout()
 {
-    trace "$*"
+#    trace "$*"
 
     local component="$1"
 
@@ -388,7 +388,7 @@ tag()
 # is the branch. Anything after a '@' is a GIT commit hash ID.
 change_branch()
 {
-    trace "$*"
+#    trace "$*"
 
     local version="`basename $1`"
     local branch="`echo $1 | cut -d '/' -f 2`"

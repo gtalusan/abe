@@ -144,7 +144,7 @@ fi
 #
 import_manifest()
 {
-    trace "$*"
+#    trace "$*"
 
     manifest=$1
     if test -f ${manifest} ; then

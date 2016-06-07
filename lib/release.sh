@@ -25,7 +25,7 @@
 # Regenerate the MD5SUMS file
 regenerate_checksums()
 {
-    trace "$*"
+#    trace "$*"
 
     local reldir=$1
 
@@ -56,7 +56,7 @@ EOF
 # GPG sign the tarball
 sign_tarball()
 {
-    trace "$*"
+#    trace "$*"
 
 #    ssh -t abe@toolchain64 gpg --no-use-agent -q --yes --passphrase-file /home/abe/.config/abe/password --armor --sign --detach-sig --default-key abe "/home/abe/var/snapshots/gcc-linaro-${release}.tar.xz" scp abe@toolchain64:/home/abe/var/snapshots/gcc-linaro-${release}.tar.xz.asc $REL_DIR
 
@@ -120,7 +120,7 @@ release_binutils_src()
 # only called with --tarsrc or --tarball.
 release_gcc_src()
 {
-    trace "$*"
+#    trace "$*"
 
     # See if specific component versions were specified at runtime
     if test x"${gcc_version}" = x; then
@@ -169,7 +169,7 @@ release_gcc_src()
 # $1 - 
 install_gcc_docs()
 {
-    trace "$*"
+#    trace "$*"
 
     local destdir=$1
     local srcdir=$1
@@ -208,7 +208,7 @@ install_gcc_docs()
 # $2 - the tag or release string
 edit_changelogs()
 {
-    trace "$*"
+#    trace "$*"
 
     local destdir="$1"
     local basedir="`dirname $1`"
@@ -266,7 +266,7 @@ edit_changelogs()
 # $1 - file name-version to grab from source code control.
 release_gdb_src()
 {
-    trace "$*"
+#    trace "$*"
 
     # See if specific component versions were specified at runtime
     if test x"${gdb_version}" = x; then
@@ -340,7 +340,7 @@ tag_release()
 # $1 - The release ttee directory to put the script in for packaging.
 sysroot_install_script()
 {
-    trace "$*"
+#    trace "$*"
 
     local script=$1/INSTALL-SYSROOT.sh
     local tag="`basename $1`"

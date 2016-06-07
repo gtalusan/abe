@@ -87,7 +87,7 @@ component_init ()
 #
 set_component_url ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     declare -p ${component} 2>&1 > /dev/null
@@ -103,7 +103,7 @@ set_component_url ()
 
 set_component_revision ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     declare -p ${component} 2>&1 > /dev/null
@@ -119,7 +119,7 @@ set_component_revision ()
 
 set_component_srcdir ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     declare -p ${component} 2>&1 > /dev/null
@@ -135,7 +135,7 @@ set_component_srcdir ()
 
 set_component_builddir ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     declare -p ${component} 2>&1 > /dev/null
@@ -151,7 +151,7 @@ set_component_builddir ()
 
 set_component_filespec ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     declare -p ${component} 2>&1 > /dev/null
@@ -167,7 +167,7 @@ set_component_filespec ()
 
 set_component_branch ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     declare -p ${component} 2>&1 > /dev/null
@@ -183,7 +183,7 @@ set_component_branch ()
 
 set_component_makeflags ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     declare -p ${component} 2>&1 > /dev/null
@@ -199,7 +199,7 @@ set_component_makeflags ()
 
 set_component_configure ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     declare -p ${component} 2>&1 > /dev/null
@@ -235,7 +235,7 @@ set_component_configure ()
 #
 get_component_url ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "${component:+set}" != "set"; then
@@ -250,7 +250,7 @@ get_component_url ()
 
 get_component_revision ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "${component:+set}" != "set"; then
@@ -265,7 +265,7 @@ get_component_revision ()
 
 get_component_srcdir ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "${component:+set}" != "set"; then
@@ -280,7 +280,7 @@ get_component_srcdir ()
 
 get_component_builddir ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "${component:+set}" != "set"; then
@@ -295,7 +295,7 @@ get_component_builddir ()
 
 get_component_filespec ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "${component:+set}" != "set"; then
@@ -310,7 +310,7 @@ get_component_filespec ()
 
 get_component_branch ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "${component:+set}" != "set"; then
@@ -325,7 +325,7 @@ get_component_branch ()
 
 get_component_makeflags ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "${component:+set}" != "set"; then
@@ -340,7 +340,7 @@ get_component_makeflags ()
 
 get_component_configure ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local sopts=""
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
@@ -365,7 +365,7 @@ get_component_configure ()
 
 get_component_staticlink ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "${component:+set}" != "set"; then
@@ -380,7 +380,7 @@ get_component_staticlink ()
 
 get_component_runtestflags ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "${component:+set}" != "set"; then
@@ -396,7 +396,7 @@ get_component_runtestflags ()
 # Note that this function is GCC specific.
 get_component_stage ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local stage="`echo $1 | tr "[:lower:]" "[:upper:]"`"
     local component="gcc"
@@ -415,7 +415,7 @@ get_component_stage ()
 # $1 - The component name.
 component_is_tar ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "${component:+set}" != "set"; then
@@ -434,7 +434,7 @@ component_is_tar ()
 
 get_component_subdir ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "${component:+set}" != "set"; then
@@ -452,7 +452,7 @@ get_component_subdir ()
 # read version of the same data.
 component_dump()
 {
-#    trace "$*"
+##    trace "$*"
 
     local flag="`set -o | grep xtrace| tr -s ' ' | tr -d '\t' | cut -d ' ' -f 2`"
     set +x
@@ -479,7 +479,7 @@ component_dump()
 
 collect_data ()
 {
-#    trace "$*"
+##    trace "$*"
 
     local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
 

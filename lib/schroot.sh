@@ -20,7 +20,7 @@
 # $1 - [optional] target triplet
 print_schroot_board_files()
 {
-    trace "$*"
+#    trace "$*"
 
     local target="$1"
 
@@ -39,7 +39,7 @@ print_schroot_board_files()
 # Print unique port to be used for ssh server on the boards
 print_schroot_port()
 {
-    trace "$*"
+#    trace "$*"
 
     # Set build_n to the last digit appearing in hostname.
     # E.g., tcwgbuild04 becomes "4" (and so does x86_64).
@@ -124,7 +124,7 @@ start_schroot_session()
 # $3 - directory on host that should be mounted on target
 start_schroot_sessions()
 {
-    trace "$*"
+#    trace "$*"
 
     local target="$1"
     local sysroot="$2"
@@ -187,7 +187,7 @@ start_schroot_sessions()
 # Stop schroot sessions on $schroot_boards
 stop_schroot_sessions()
 {
-    trace "$*"
+#    trace "$*"
 
     for hostname in $schroot_boards; do
 	dryrun "${topdir}/scripts/test-schroot.sh -v -f $hostname:$schroot_port"

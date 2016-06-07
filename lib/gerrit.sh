@@ -48,7 +48,7 @@
 # the requireed information.
 gerrit_info()
 {
-    trace "$*"
+#    trace "$*"
 
     declare -A gerrit=()
 
@@ -190,7 +190,7 @@ extract_gerrit_username()
 
 add_gerrit_comment ()
 {
-    trace "$*"
+#    trace "$*"
 
     local message="`cat $1`"
     local revision="$2"
@@ -208,7 +208,7 @@ add_gerrit_comment ()
 
 submit_gerrit()
 {
-    trace "$*"
+#    trace "$*"
     
     local message="`cat $1`"
     local code="${2:-0}"
@@ -223,7 +223,7 @@ submit_gerrit()
 # $3 - the file of test results, if any
 gerrit_build_status()
 {
-    trace "$*"
+#    trace "$*"
     
     local srcdir="`get_component_srcdir $1`"
     local status="$2"
@@ -332,7 +332,7 @@ gerrit_fetch_patch()
 
 gerrit_apply_patch()
 {
-    trace "$*"
+#    trace "$*"
 
     # Without being triggered by Gerrit, environment varibles we use won't exist.
     if test x"${gerrit_trigger}" != xyes; then
@@ -355,7 +355,7 @@ gerrit_apply_patch()
 # $1 - The Change_ID from Gerrit for this patch
 gerrit_cherry_pick()
 {
-    trace "$*"
+#    trace "$*"
 
     # Without being triggered by Gerrit, environment varibles we use won't exist.
     if test x"${gerrit_trigger}" != xyes; then
@@ -392,7 +392,7 @@ gerrit_cherry_pick()
 # GERRIT_TOPIC	Michael-4.9-backport-219656-219657-219659-219661-219679
 gerrit_query_patchset()
 {
-    trace "$*"
+#    trace "$*"
 
     # Without being triggered by Gerrit, environment varibles we use wont exist.
     if test x"${gerrit['CHANGE_ID']}" = x; then 

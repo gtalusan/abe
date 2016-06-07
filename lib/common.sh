@@ -170,7 +170,7 @@ source_config()
 #      tarball name.
 get_toolname()
 {
-#    trace "$*"
+##    trace "$*"
 
     if test x"$1" = x; then
 	error "No toolchain component name argument!"
@@ -196,7 +196,7 @@ get_toolname()
 # for the LINARO-VERSION file.
 create_release_version()
 {
-#    trace "$*"
+##    trace "$*"
 
     local version=$1
     local branch=
@@ -243,7 +243,7 @@ create_release_version()
 # returns "version~branch@revision"
 create_release_tag()
 {
-    trace "$*"
+#    trace "$*"
 
     local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
     if test "`component_is_tar ${component}`" = no; then
