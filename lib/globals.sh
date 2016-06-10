@@ -146,6 +146,8 @@ import_manifest()
 {
 #    trace "$*"
 
+    warning "If your manifest file has been hand edited, any problems are your own fault."
+
     manifest=$1
     if test -f ${manifest} ; then
 	local components="`grep "^# Component data for " ${manifest} | cut -d ' ' -f 5`"
@@ -235,6 +237,10 @@ import_manifest()
 	error "Manifest file '${manifest}' not found"
 	build_failure
 	return 1
+    fi
+
+    if test x"`get_component_revision gdb`" != x"`get_component_revision gdbserver`"; then
+	warning "GDB and GDBSERVER revisions don't match in the manifest file!"
     fi
 
     return 0
