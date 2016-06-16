@@ -484,7 +484,7 @@ collect_data ()
     local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
 
     if test x"${manifest}" != x; then
-	notice "Reading data from Manifest file."
+	notice "Using data for ${component} from Manifest file ${manifest}."
 	return 0
     fi
 
@@ -568,12 +568,6 @@ collect_data ()
 	    branch="master"
 	fi
 	local revision="`get_git_revision ${gitinfo}`"
-	# gdb and gdbserver should always be built from the same revision
-	# of the sources, but it's possible some developer *might* want
-	# to build these with differing revisions.
-	if test x"${component}" = x"gdbserver" -a x"${revision}" = x; then
-	    revision="`get_component_revision gdb`"
-	fi
 	local search=
 	case ${component} in
 	    binutils*|gdb*) search="binutils-gdb.git" ;;
@@ -590,11 +584,6 @@ collect_data ()
 	# This is unfortunately, as @ is used to deliminate the revision
 	# string.
 	local fixbranch="`echo ${branch} | tr '/' '~' | tr '@' '_'`"
-	# gdb, gdbserver, and binutils have a shared source tree, so
-	# make it obvious which component this is.
-	if test "`echo ${component} | egrep -c 'gdb|binutils'`" -gt 0; then
-	    fixbranch="${component}-${fixbranch}"
-	fi
 	local dir=${search}${branch:+~${fixbranch}}${revision:+_rev_${revision}}
     fi
 
@@ -609,7 +598,15 @@ collect_data ()
 	gdbserver)
 	    local dir="`echo ${dir} | sed -e 's:^.*\.git:binutils-gdb.git:'`"
 	    local srcdir=${srcdir}/gdb/gdbserver
-#	    local builddir="${builddir}-gdbserver"
+	    # gdb and gdbserver should always be built from the same revision
+	    # of the sources, but it's possible some developer *might* want
+	    # to build these with differing revisions.
+	    if test x"${revision}" = x; then
+		revision="`get_component_revision gdb`"
+	    fi
+	    if test x"${branch}" = x; then
+		branch="`get_component_branch gdb`"
+	    fi
 	    ;;
 	eglibc)
             local srcdir=${srcdir}/libc

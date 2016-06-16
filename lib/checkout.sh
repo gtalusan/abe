@@ -147,7 +147,7 @@ checkout()
     # avoid breaking the remote protocol, it's possible some developer *might*
     # want to build these with differing revisions.
     if test x"${component}" = x"gdbserver"; then
-	if test "`get_component_revision gdb`" = "`get_component_revision gdbserver`"; then
+	if test x"`get_component_revision gdb`" = x"`get_component_revision gdbserver`"; then
 	    return 0
 	else
 	    warning "Building gdb and gdbserver with different revisions is a bad idea!"
