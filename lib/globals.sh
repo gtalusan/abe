@@ -149,6 +149,8 @@ import_manifest()
 {
 #    trace "$*"
 
+    warning "If your manifest file has been hand edited, any problems are your own fault."
+
     manifest=$1
     if test -f ${manifest} ; then
 	if test x"`grep "^gdb_revision" ${manifest} | cut -d '=' -f 2`" != x"`grep "^gdbserver_revision" ${manifest} | cut -d '=' -f 2`"; then
