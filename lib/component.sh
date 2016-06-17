@@ -597,7 +597,8 @@ collect_data ()
 	    ;;
 	gdbserver)
 	    local dir="`echo ${dir} | sed -e 's:^.*\.git:binutils-gdb.git:'`"
-	    local srcdir=${srcdir}/gdb/gdbserver
+	    local srcdir="${local_snapshots}/${dir}/gdb/gdbserver"
+	    local builddir="${builddir}/gdb/gdbserver"
 	    # gdb and gdbserver should always be built from the same revision
 	    # of the sources, but it's possible some developer *might* want
 	    # to build these with differing revisions.
