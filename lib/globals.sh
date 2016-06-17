@@ -203,12 +203,11 @@ import_manifest()
 		gdb|binutils)
 		    local dir="`echo ${dir} | sed -e 's:^.*\.git:binutils-gdb.git:'`"
 		    local srcdir=${local_snapshots}/${dir}
-		    local builddir="${local_builds}/${host}/${target}/${dir}"
 		    ;;
 		gdbserver)
 		    local dir="`echo ${dir} | sed -e 's:^.*\.git:binutils-gdb.git:'`"
-		    local srcdir=${local_snapshots}/${dir}/gdb/gdbserver
- 		    local builddir="${local_builds}/${host}/${target}/${dir}-gdbserver"
+		    local srcdir="${local_snapshots}/${dir}/gdb/gdbserver"
+		    local builddir="${builddir}/gdb/gdbserver"
 		    ;;
 		*glibc)
 		    # Glibc builds will fail if there is an @ in the path. This is
