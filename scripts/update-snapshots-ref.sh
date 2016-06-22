@@ -42,7 +42,7 @@ generate_snapshots ()
     cd $abe_temp
     git reset --hard
     git clean -fd
-    ./configure --with-local-snapshots=${snapshots_dir}-new --with-fileserver=ex40-01.tcwglab.linaro.org/snapshots-ref
+    ./configure --with-local-snapshots=${snapshots_dir}-new
 
     if [ -e $HOME/.aberc ]; then
 	echo "WARNING: $HOME/.aberc detected and it might override ABE's behavior"
@@ -58,7 +58,9 @@ generate_snapshots ()
     )
 
     for t in "${targets[@]}"; do
-	./abe.sh --target $t --checkout all
+	for c in gcc5 gcc6; do
+	    ./abe.sh --target $t --extraconfigdir config/$c --checkout all
+	done
     done
 }
 
