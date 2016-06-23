@@ -590,18 +590,6 @@ make_install()
     fi
 
 
-    # Use LSB to produce more portable binary releases.
-    if test x"${LSBCC}" != x -a x"${LSBCXX}" != x -a x"${tarbin}" = x"yes"; then
-	case ${component} in
-	    binutils|gdb|gcc)
-		export LSB_SHAREDLIBPATH=${builddir}
-		local make_flags="${make_flags} CC=${LSBCC} CXX=${LSBCXX}"
-		;;
-	    *)
-		;;
-	esac
-    fi
-
     local builddir="`get_component_builddir ${component}`${2:+-$2}"
     notice "Making install in ${builddir}"
 

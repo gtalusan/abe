@@ -616,8 +616,6 @@ AUTOGEN
 BISON
 FLEX
 BASH
-LSBCXX
-LSBCC
 CCACHE
 WGET
 DISTRIBUTION
@@ -3219,105 +3217,6 @@ $as_echo "$CCACHE" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-fi
-
-
-
-# Linux Foundation installs them in /opt/lsb. Older Ubuntus will install them
-# in the default system library path, but as of Trusty you have to get LSB from
-# the Linux Foundation.
-# Extract the first word of "lsbcc", so it can be a program name with args.
-set dummy lsbcc; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_LSBCC+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $LSBCC in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_LSBCC="$LSBCC" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-as_dummy="/opt/lsb/bin:${PATH}"
-for as_dir in $as_dummy
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_LSBCC="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-LSBCC=$ac_cv_path_LSBCC
-if test -n "$LSBCC"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LSBCC" >&5
-$as_echo "$LSBCC" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-# Extract the first word of "lsbc++", so it can be a program name with args.
-set dummy lsbc++; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_LSBCXX+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $LSBCXX in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_LSBCXX="$LSBCXX" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-as_dummy="/opt/lsb/bin:${PATH}"
-for as_dir in $as_dummy
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_LSBCXX="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-LSBCXX=$ac_cv_path_LSBCXX
-if test -n "$LSBCXX"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LSBCXX" >&5
-$as_echo "$LSBCXX" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-if test x"${LSBCC}" = x; then
-   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: You need 'lsbcc' and 'lsbc++' to produce binary releases!
-                    If your system is running the Fedora Linux distribution
-                    running: sudo abe/scripts/fedora_lsb_install.sh will
-                    install the LSB dependencies." >&5
-$as_echo "$as_me: WARNING: You need 'lsbcc' and 'lsbc++' to produce binary releases!
-                    If your system is running the Fedora Linux distribution
-                    running: sudo abe/scripts/fedora_lsb_install.sh will
-                    install the LSB dependencies." >&2;}
-#   missing="${missing} lsbcc"
 fi
 
 

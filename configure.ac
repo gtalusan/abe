@@ -86,21 +86,6 @@ fi
 
 AC_PATH_PROG(CCACHE, ccache)
 
-# Linux Foundation installs them in /opt/lsb. Older Ubuntus will install them
-# in the default system library path, but as of Trusty you have to get LSB from
-# the Linux Foundation.
-AC_PATH_PROG(LSBCC, lsbcc, ,/opt/lsb/bin:${PATH})
-AC_PATH_PROG(LSBCXX, lsbc++, ,/opt/lsb/bin:${PATH})
-if test x"${LSBCC}" = x; then
-   AC_MSG_WARN([You need 'lsbcc' and 'lsbc++' to produce binary releases!
-                    If your system is running the Fedora Linux distribution
-                    running: sudo abe/scripts/fedora_lsb_install.sh will
-                    install the LSB dependencies.])
-#   missing="${missing} lsbcc"
-fi
-AC_SUBST(LSBCC)
-AC_SUBST(LSBCXX)
-
 dnl AC_PATH_PROG(GITBZR, git-bzr)
 AC_PATH_PROG(BASH, bash)
 AC_SUBST(BASH)

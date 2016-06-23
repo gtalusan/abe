@@ -116,11 +116,6 @@ binary_gdb()
     local destdir="${local_builds}/tmp.$$/${tag}-tmp"
     local prefix="${local_builds}/destdir/${host}"
 
-    # Use LSB to produce more portable binary releases.
-    if test x"${LSBCC}" != x -a x"${LSBCXX}" != x; then
-	local make_flags="${make_flags} CC=${LSBCC} CXX=${LSBCXX}"
-    fi
-
     rm ${builddir}/gdb/gdb
 
     local make_flags="${make_flags}"
