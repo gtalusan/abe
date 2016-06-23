@@ -16,6 +16,42 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # 
 
+build_llvm() {
+    trace "$*"
+    local component="llvm-proj"
+
+    checkout ${component}
+
+    local srcdir="`get_component_srcdir ${component}`"
+    local topgit="`echo ${srcdir} | sed -e 's:\.git.*$:.git:'`"
+
+    local modules="`cd ${topgit} && git submodule status --recursive | cut -d ' ' -f 3`"
+
+    local revision=
+    local builddir=
+
+    # LLVM is a little different in thag it has a single git repository, and the
+    # other components are all under that top level. Since they actually get built
+    # separately, we register each LLVM component into the data array.
+    for i in ${modules}; do
+	collect_data $i
+
+	revision="`cd ${topgit} && git submodule status --recursive $i | cut -d ' ' -f 2`"
+	builddir="`get_component_builddir ${component}`-$i"
+	set_component_builddir $i ${builddir}
+	set_component_revision $i ${revision}
+	set_component_srcdir $i ${srcdir}/$i
+
+	mkdir -p ${builddir}
+	pushd ${builddir}
+	cmake ${srcdir}/$i
+	cmake --build .
+	popd
+    done
+
+    return 0
+}
+
 # This performs all the steps to build a full cross toolchain
 build_all()
 {
@@ -263,11 +299,18 @@ build()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
+#    local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
+    local component="$1"
  
     if test "`echo $2 | grep -c gdb`" -gt 0; then
 	local component="$2"
     fi
+
+    if test x"${component}" = x"llvm-proj"; then
+	build_llvm
+	return 0
+    fi
+    
     local url="`get_component_url ${component}`"
     local srcdir="`get_component_srcdir ${component}`"
     local builddir="`get_component_builddir ${component}`${2:+-$2}"
@@ -362,7 +405,7 @@ build()
 		return 1
             fi
 	fi
-	
+
 	# Finally compile and install the libaries
 	make_all ${component} ${2:+$2}
 	if test $? -gt 0; then
@@ -449,6 +492,10 @@ make_all()
 
     local builddir="`get_component_builddir ${component}`${2:+-$2}"
     notice "Making all in ${builddir}"
+
+    if test x"${component}" = x"llvm-proj"; then
+	dryrun "cd ${builddir} && cmake --build ,"
+    fi
 
     if test x"${parallel}" = x"yes" -a "`echo ${component} | grep -c glibc`" -eq 0; then
 	local make_flags="${make_flags} -j ${cpus}"
@@ -557,6 +604,10 @@ make_install()
 #    trace "$*"
 
     local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
+
+    if test x"${component}" = x"llvm-proj"; then
+	dryrun "cd ${builddir} && cmake --build , --target install "
+    fi
 
     # Do not use -j for 'make install' because several build systems
     # suffer from race conditions. For instance in GCC, several

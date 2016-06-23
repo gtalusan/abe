@@ -147,6 +147,8 @@ checkout()
 	return 0
     fi
 
+    collect_data ${component}
+
     # None of the following should be able to fail with the code as it is
     # written today (and failures are therefore untestable) but propagate
     # errors anyway, in case that situation changes.
@@ -187,6 +189,12 @@ checkout()
 		    rm -f ${local_builds}/git$$.lock
 		    return 1
 		fi
+		if test -e ${srcdir}/.gitmodules; then
+		    dryrun "(cd ${srcdir} && git submodule init)"
+		    if test $? -gt 0; then
+			error "Couldn't init submodules in ${srcdir}!"
+		    fi
+		fi
 		# If there are submodules, initialize them
 		if test -e ${topgit}/.gitmodules; then
 		    dryrun "cd ${topgit} && git submodule init"
@@ -197,7 +205,14 @@ checkout()
 	    fi
 	    # If there are submodules, update them before any other operations
 	    if test -e ${topgit}/.gitmodules; then
-		dryrun "cd ${topdir} && git submodule update"
+		dryrun "cd ${topgit} && git submodule update"
+		if test $? -gt 0; then
+		    error "Couldn't update submodules in ${srcdir}!"
+		fi
+	    fi
+
+	    if test -e ${srcdir}/.gitmodules; then
+		dryrun "cd ${srcdir} && git submodule update"
 		if test $? -gt 0; then
 		    error "Couldn't update submodules in ${srcdir}!"
 		fi
