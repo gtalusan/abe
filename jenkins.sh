@@ -303,6 +303,13 @@ if test x"${debug}" = x"true"; then
     export CONFIG_SHELL="/bin/bash -x"
 fi
 
+# Print some information about the build machine
+echo Running on `hostname`
+uname -a
+lsb_release -a
+cat /proc/cpuinfo
+cat /proc/meminfo
+
 $CONFIG_SHELL ${abe_dir}/configure --with-local-snapshots=${user_snapshots} --with-git-reference-dir=${git_reference} --with-languages=${languages} --enable-schroot-test --with-fileserver=${fileserver}
 
 # Reduce parallelism of individual builds in Cambridge lab to try reduce
