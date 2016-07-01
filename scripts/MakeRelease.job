@@ -17,7 +17,7 @@ extra=
 toolchain_config=""
 user_workspace="${WORKSPACE:-/home/${USER:-buildslave}/workspace}"
 
-OPTS="`getopt -o r:t:f:d:bs:w:ng:u:h -l target:,ref:,date:,fileserver:,tarbin:,tarsrc:,workspace:,toolchainconfig:,gcc:,binutils:,help`"
+OPTS="`getopt -o r:t:f:d:bs:w:nl:g:u:h -l target:,ref:,date:,fileserver:,tarbin:,tarsrc:,workspace:,toolchainconfig:,glibc:,gcc:,binutils:,help`"
 while test $# -gt 0; do
     case $1 in
 	-w|--workspace) user_workspace=$2 ;;
@@ -28,6 +28,7 @@ while test $# -gt 0; do
 	-r|--ref) ref=$2 ;;
 	--toolchainconfig) toolchain_config=$2 ;;
         -f|--fileserver) fileserver=$2 ;;
+        -l|--glibc) glibc_src=$2 ;;
         -g|--gcc) gcc_src=$2 ;;
         -u|--binutils) binutils_src=$2 ;;
 	-n|--nocheck) nocheck=yes ;;
@@ -113,9 +114,10 @@ else
     libc="--set libc=newlib"
 fi
 
+glibc=${glibc_src:+glibc=${glibc_src}}
 binutils=${binutils_src:+binutils=${binutils_src}}
 gcc=${gcc_src:+gcc=${gcc_src}}
-srcs="${gcc} ${binutils}"
+srcs="${gcc} ${binutils} ${glibc}"
 
 # Build a toolchain, run the tests, and the create a source release as a tarball
 if test x"${tarsrc}" = x"yes"; then
