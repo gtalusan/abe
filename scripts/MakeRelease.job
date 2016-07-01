@@ -63,7 +63,7 @@ fi
 update=""
 
 if test x"${extra}" != x; then
-    extra="--extraconfig ${extra}"
+    extra="--extraconfigdir ${extra}"
 fi
 
 if test x"${runtests}" = xtrue; then
