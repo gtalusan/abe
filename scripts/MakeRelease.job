@@ -33,7 +33,6 @@ else
 fi
 target=""
 tarbin=""
-check=""
 ref="snapshots-ref"
 fileserver="148.251.136.42"
 extra=
@@ -95,10 +94,6 @@ if test x"${toolchain_config}" != x"" \
     extra="${extra} --extraconfigdir ../config/${toolchain_config}"
 fi
 
-if test x"${runtests}" = xtrue; then
-    chroot="--enable-schroot-test"
-fi
-
 guess="`${abe_dir}/config.guess`"
 machine="`gcc -dumpmachine`"
 if test x"${guess}" != x"${machine}"; then
@@ -110,16 +105,9 @@ fi
 cd ${user_workspace}/_build
 
 if ! test -e host.conf; then
-  $CONFIG_SHELL ${abe_dir}/configure ${chroot} --with-local-snapshots=${user_snapshots} \
+  $CONFIG_SHELL ${abe_dir}/configure --with-local-snapshots=${user_snapshots} \
       --with-git-reference-dir=${shared}/snapshots --with-fileserver=${fileserver} --with-remote-snapshots=${ref}
 
-fi
-
-if test x"${runtests}" = xtrue; then
-    chroot="--enable-schroot-test"
-    check="--check all"
-else
-    check=""
 fi
 
 if test x"${date}" != x; then
@@ -149,14 +137,14 @@ if test x"${tarbin}" = x"yes"; then
     rm -f ${logfile}
     # Canadian cross builds require a Linux hosted cross compiler first
     if test x"${canadian}" = x"true"; then
-	$CONFIG_SHELL ${abe_dir}/abe.sh ${update} --release ${release} ${check} ${srcs} ${platform} --build all ${libc} ${extra} >> ${logfile}
+	$CONFIG_SHELL ${abe_dir}/abe.sh ${update} --release ${release} ${srcs} ${platform} --build all ${libc} ${extra} >> ${logfile}
 	host="--host i686-w64-mingw32"
 	rm -fr ${local_builds}/${host}/${target}/
 #	update="--disable update"
     else
 	host=""
     fi
-    $CONFIG_SHELL ${abe_dir}/abe.sh ${update} --release ${release} --tarbin ${check} ${srcs} ${platform} ${host} --build all ${libc} ${extra} >> ${logfile}
+    $CONFIG_SHELL ${abe_dir}/abe.sh ${update} --release ${release} --tarbin ${srcs} ${platform} ${host} --build all ${libc} ${extra} >> ${logfile}
 fi
 
 # force a failure if abe has build problems.
@@ -188,29 +176,6 @@ if test x"${tarbin}" = xyes; then
     scp ${manifest} ${fileserver}:${binaries}/
     tarballs="`find ${user_snapshots} -name \*${release}\*.xz -o -name \*${release}\*.asc`"
     scp ${tarballs} ${fileserver}:${binaries}/
-    if test x"${check}" != x; then
-	sums="`find ${user_workspace} -name \*.sum`"
-	logs="`find ${user_workspace} -name \*.log`"
-	if test x"${sums}" != x; then
-	    xz ${sums} ${logs}
-	    sums="`echo ${sums} | sed -e 's/\.sum/\.sum.xz/g'`"
-	    logs="`echo ${logs} | sed -e 's/\.log/\.log.xz/g'`"
-	    ssh ${fileserver} "mkdir -p ${binaries}/"
-	    scp ${sums} ${logs} ${fileserver}:${binaries}/
-	else
-	    echo "ERROR: No test results were found!"
-	fi
-	
-	# Diff the two directories
-	scp ${abe_dir}/tcwgweb.sh ${fileserver}:/tmp/tcwgweb$$.sh
-	out="`ssh ${fileserver} "if test -e ${bases}; then echo YES; else echo NO; fi"`"
-	if test x"${out}" = x"YES"; then 
-	    out="`ssh ${fileserver} /tmp/tcwgweb$$.sh --email --tdir ${bases} ${binaries}`"
-	    if test "`echo ${out} | grep -c REGRESSIONS`"; then
-		exit 1
-	    fi
-	fi
-    fi
 fi
 
 exit 0
