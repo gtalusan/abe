@@ -1241,7 +1241,11 @@ if test ! -z ${do_checkout}; then
 	fi
     else
 	infrastructure="`grep ^depends ${topdir}/config/infrastructure.conf | tr -d '\"' | sed -e 's:^depends=::'`"
-	builds="${infrastructure} binutils gcc gdb libc"
+	if test x"${enable_toolchain}" = x"gcc"; then
+	    builds="${infrastructure} binutils gcc gdb libc"
+	else
+	    builds="llvm-proj"
+	fi
 	checkout_all ${builds}
 	if test $? -gt 0; then
 	    error "--checkout all failed."
