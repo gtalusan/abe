@@ -86,21 +86,6 @@ fi
 
 AC_PATH_PROG(CCACHE, ccache)
 
-# Linux Foundation installs them in /opt/lsb. Older Ubuntus will install them
-# in the default system library path, but as of Trusty you have to get LSB from
-# the Linux Foundation.
-AC_PATH_PROG(LSBCC, lsbcc, ,/opt/lsb/bin:${PATH})
-AC_PATH_PROG(LSBCXX, lsbc++, ,/opt/lsb/bin:${PATH})
-if test x"${LSBCC}" = x; then
-   AC_MSG_WARN([You need 'lsbcc' and 'lsbc++' to produce binary releases!
-                    If your system is running the Fedora Linux distribution
-                    running: sudo abe/scripts/fedora_lsb_install.sh will
-                    install the LSB dependencies.])
-#   missing="${missing} lsbcc"
-fi
-AC_SUBST(LSBCC)
-AC_SUBST(LSBCXX)
-
 dnl AC_PATH_PROG(GITBZR, git-bzr)
 AC_PATH_PROG(BASH, bash)
 AC_SUBST(BASH)
@@ -292,6 +277,7 @@ dnl AC_SUBST(FILESERVER)
 
 AC_ARG_WITH(sources-conf,
   AC_HELP_STRING([--with-sources-conf], []),
+  SOURCES_CONF=${withval},
   SOURCES_CONF="${srcdir}/config/sources.conf"
   dir="`dirname ${SOURCES_CONF}`"
   base="`cd ${dir} && pwd`"
@@ -368,6 +354,14 @@ AC_ARG_WITH(languages,
   WITH_LANGUAGES=${withval},
   WITH_LANGUAGES='default')
 AC_SUBST(WITH_LANGUAGES)
+
+AC_ARG_ENABLE(toolchain, AC_HELP_STRING([--enable-toolchain], [Enable support for building LLVM or GCC]),
+[case "${enableval}" in
+  gcc) ENABLE_TOOLCHAIN=gcc ;;
+  llvm)  ENABLE_TOOLCHAIN=llvm ;;
+  *)   AC_MSG_WARN([bad value ${enableval} for enable-toolchain option]) ;;
+esac], ENABLE_TOOLCHAIN=gcc)
+AC_SUBST(ENABLE_TOOLCHAIN)
 
 dnl if you have SSH access to the remote machine
 AC_ARG_ENABLE(ssh, AC_HELP_STRING([--enable-ssh], [If you have SSH access to remote build host]),
@@ -483,6 +477,16 @@ AC_PATH_PROG(NEWWORKDIR,git-new-workdir)
       missing="${missing} git-new-workdir"
 fi
 AC_SUBST(NEWWORKDIR)
+
+# Enable additional tests for LLVM
+if test x"${ENABLE_TOOLCHAIN}" = x"llvm"; then
+AC_PATH_PROG(CMAKE,cmake)
+   if test x"${CMAKE}" = x; then
+      AC_MSG_WARN([You need to install cmake to buid LLVM])
+      missing="${missing} smake"
+   fi      
+fi
+AC_SUBST(CMAKE)
 
 # A symbolic link needs to be made in this directory
 #if test -w /opt/linaro -eq 0; then

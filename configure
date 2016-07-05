@@ -584,6 +584,7 @@ PACKAGE_URL=''
 ac_unique_file="abe.sh"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+CMAKE
 NEWWORKDIR
 MAKEINFO
 DEJAGNU
@@ -598,6 +599,7 @@ ENABLE_INSTALL
 ENABLE_ALLTESTS
 ENABLE_BOOTSTRAP
 ENABLE_SSH
+ENABLE_TOOLCHAIN
 WITH_LANGUAGES
 REMOTE_SNAPSHOTS
 LOCAL_BUILDS
@@ -616,8 +618,6 @@ AUTOGEN
 BISON
 FLEX
 BASH
-LSBCXX
-LSBCC
 CCACHE
 WGET
 DISTRIBUTION
@@ -663,6 +663,7 @@ infodir
 docdir
 oldincludedir
 includedir
+runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -697,6 +698,7 @@ with_git_reference_dir
 with_local_builds
 with_remote_snapshots
 with_languages
+enable_toolchain
 enable_ssh
 enable_bootstrap
 enable_alltests
@@ -755,6 +757,7 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
+runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
@@ -1007,6 +1010,15 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
+  -runstatedir | --runstatedir | --runstatedi | --runstated \
+  | --runstate | --runstat | --runsta | --runst | --runs \
+  | --run | --ru | --r)
+    ac_prev=runstatedir ;;
+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
+  | --run=* | --ru=* | --r=*)
+    runstatedir=$ac_optarg ;;
+
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1144,7 +1156,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir
+		libdir localedir mandir runstatedir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1297,6 +1309,7 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -1326,6 +1339,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-toolchain      Enable support for building LLVM or GCC
   --enable-ssh            If you have SSH access to remote build host
   --enable-bootstrap      If you want to do bootstrap by default
   --enable-alltests       If you want to run all tests by default
@@ -3223,105 +3237,6 @@ fi
 
 
 
-# Linux Foundation installs them in /opt/lsb. Older Ubuntus will install them
-# in the default system library path, but as of Trusty you have to get LSB from
-# the Linux Foundation.
-# Extract the first word of "lsbcc", so it can be a program name with args.
-set dummy lsbcc; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_LSBCC+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $LSBCC in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_LSBCC="$LSBCC" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-as_dummy="/opt/lsb/bin:${PATH}"
-for as_dir in $as_dummy
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_LSBCC="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-LSBCC=$ac_cv_path_LSBCC
-if test -n "$LSBCC"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LSBCC" >&5
-$as_echo "$LSBCC" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-# Extract the first word of "lsbc++", so it can be a program name with args.
-set dummy lsbc++; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_LSBCXX+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  case $LSBCXX in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_LSBCXX="$LSBCXX" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-as_dummy="/opt/lsb/bin:${PATH}"
-for as_dir in $as_dummy
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_LSBCXX="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-LSBCXX=$ac_cv_path_LSBCXX
-if test -n "$LSBCXX"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LSBCXX" >&5
-$as_echo "$LSBCXX" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-if test x"${LSBCC}" = x; then
-   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: You need 'lsbcc' and 'lsbc++' to produce binary releases!
-                    If your system is running the Fedora Linux distribution
-                    running: sudo abe/scripts/fedora_lsb_install.sh will
-                    install the LSB dependencies." >&5
-$as_echo "$as_me: WARNING: You need 'lsbcc' and 'lsbc++' to produce binary releases!
-                    If your system is running the Fedora Linux distribution
-                    running: sudo abe/scripts/fedora_lsb_install.sh will
-                    install the LSB dependencies." >&2;}
-#   missing="${missing} lsbcc"
-fi
-
-
-
 # Extract the first word of "bash", so it can be a program name with args.
 set dummy bash; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -3899,7 +3814,9 @@ fi
 
 # Check whether --with-sources-conf was given.
 if test "${with_sources_conf+set}" = set; then :
-  withval=$with_sources_conf; SOURCES_CONF="${srcdir}/config/sources.conf"
+  withval=$with_sources_conf; SOURCES_CONF=${withval}
+else
+  SOURCES_CONF="${srcdir}/config/sources.conf"
   dir="`dirname ${SOURCES_CONF}`"
   base="`cd ${dir} && pwd`"
   conf="`basename  ${SOURCES_CONF}`"
@@ -3998,6 +3915,20 @@ if test "${with_languages+set}" = set; then :
   withval=$with_languages; WITH_LANGUAGES=${withval}
 else
   WITH_LANGUAGES='default'
+fi
+
+
+
+# Check whether --enable-toolchain was given.
+if test "${enable_toolchain+set}" = set; then :
+  enableval=$enable_toolchain; case "${enableval}" in
+  gcc) ENABLE_TOOLCHAIN=gcc ;;
+  llvm)  ENABLE_TOOLCHAIN=llvm ;;
+  *)   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: bad value ${enableval} for enable-toolchain option" >&5
+$as_echo "$as_me: WARNING: bad value ${enableval} for enable-toolchain option" >&2;} ;;
+esac
+else
+  ENABLE_TOOLCHAIN=gcc
 fi
 
 
@@ -4388,6 +4319,56 @@ $as_echo "$as_me: WARNING: You need to install git-new-workdir to use GIT!" >&2;
       { $as_echo "$as_me:${as_lineno-$LINENO}: copy /usr/share/doc/git/contrib/workdir/git-new-workdir to /usr/local/bin and then make it executable" >&5
 $as_echo "$as_me: copy /usr/share/doc/git/contrib/workdir/git-new-workdir to /usr/local/bin and then make it executable" >&6;}
       missing="${missing} git-new-workdir"
+fi
+
+
+# Enable additional tests for LLVM
+if test x"${ENABLE_TOOLCHAIN}" = x"llvm"; then
+# Extract the first word of "cmake", so it can be a program name with args.
+set dummy cmake; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_CMAKE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $CMAKE in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_CMAKE="$CMAKE" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_CMAKE="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+CMAKE=$ac_cv_path_CMAKE
+if test -n "$CMAKE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CMAKE" >&5
+$as_echo "$CMAKE" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+   if test x"${CMAKE}" = x; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: You need to install cmake to buid LLVM" >&5
+$as_echo "$as_me: WARNING: You need to install cmake to buid LLVM" >&2;}
+      missing="${missing} smake"
+   fi
 fi
 
 
