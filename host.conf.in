@@ -29,6 +29,8 @@ distribution=@DISTRIBUTION@
 # various configure time flags
 with_languages=@WITH_LANGUAGES@
 enable_ssh=@ENABLE_SSH@
+enable_toolchain=@ENABLE_TOOLCHAIN@
+cmake=@CMAKE@
 bootstrap=@ENABLE_BOOTSTRAP@
 alltests=@ENABLE_ALLTESTS@
 install=@ENABLE_INSTALL@
