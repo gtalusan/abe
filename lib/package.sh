@@ -233,7 +233,7 @@ manifest()
     fi
 
     if test x"$1" = x; then
-	mtag="`create_release_tag gcc`"
+	mtag="`create_release_tag ${enable_toolchain}`"
 	mkdir -p ${local_builds}/${host}/${target}
 	local outfile=${local_builds}/${host}/${target}/${mtag}-manifest.txt
     else
