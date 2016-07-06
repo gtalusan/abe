@@ -18,7 +18,10 @@
 
 build_llvm() {
     trace "$*"
+
     local component="llvm-proj"
+    local revision=
+    local builddir=
 
     checkout ${component}
 
@@ -27,10 +30,7 @@ build_llvm() {
 
     local modules="`cd ${topgit} && git submodule status --recursive | cut -d ' ' -f 3`"
 
-    local revision=
-    local builddir=
-
-    # LLVM is a little different in thag it has a single git repository, and the
+    # LLVM is a little different in that it has a single git repository, and the
     # other components are all under that top level. Since they actually get built
     # separately, we register each LLVM component into the data array.
     for i in ${modules}; do
@@ -44,10 +44,13 @@ build_llvm() {
 
 	mkdir -p ${builddir}
 	pushd ${builddir}
-	cmake ${srcdir}/$i
-	cmake --build .
+        notice "Building llvm-proj, current component $i"
+	${cmake} ${srcdir}/$i
+#	${cmake} --build .
 	popd
     done
+
+    local manifest="`manifest`"
 
     return 0
 }
@@ -59,6 +62,11 @@ build_all()
     
     # Turn off dependency checking, as everything is handled here
     nodepends=yes
+
+    if test x"${enable_toolchain}" = x"llvm"; then
+	build_llvm
+	return 0
+    fi
     
     local infrastructure="`grep ^depends ${topdir}/config/infrastructure.conf | tr -d '"' | sed -e 's:^depends=::'`"
 
@@ -306,11 +314,6 @@ build()
 	local component="$2"
     fi
 
-    if test x"${component}" = x"llvm-proj"; then
-	build_llvm
-	return 0
-    fi
-    
     local url="`get_component_url ${component}`"
     local srcdir="`get_component_srcdir ${component}`"
     local builddir="`get_component_builddir ${component}`${2:+-$2}"
@@ -492,10 +495,6 @@ make_all()
 
     local builddir="`get_component_builddir ${component}`${2:+-$2}"
     notice "Making all in ${builddir}"
-
-    if test x"${component}" = x"llvm-proj"; then
-	dryrun "cd ${builddir} && cmake --build ,"
-    fi
 
     if test x"${parallel}" = x"yes" -a "`echo ${component} | grep -c glibc`" -eq 0; then
 	local make_flags="${make_flags} -j ${cpus}"
