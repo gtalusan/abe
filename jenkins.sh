@@ -305,12 +305,14 @@ fi
 
 # Download QEMU provided by Peter Maydell.
 # The tarball has README with version information.
-wget http://people.linaro.org/~maxim.kuvyrkov/qemu-20160704.tgz
-tar xf qemu-20160704.tgz
-export PATH="`pwd`/qemu-wip:$PATH"
-for i in aarch64 arm armeb; do
-    qemu-$i --version
-done
+if [ x"$(uname -m)" = x"x86_64" ]; then
+    wget http://people.linaro.org/~maxim.kuvyrkov/qemu-20160704.tgz
+    tar xf qemu-20160704.tgz
+    export PATH="`pwd`/qemu-wip:$PATH"
+    for i in aarch64 arm armeb; do
+	qemu-$i --version
+    done
+fi
 
 # Print some information about the build machine
 echo Running on `hostname`
