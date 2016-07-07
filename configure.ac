@@ -479,14 +479,24 @@ fi
 AC_SUBST(NEWWORKDIR)
 
 # Enable additional tests for LLVM
+# libsfgcc1-armhf-cross gcc-4.7-arm-linux-gnueabihf
+# gcc-4.7-multilib-arm-linux-gnueabihf binutils-arm-linux-gnueabihf
+# libgcc1-armhf-cross libsfgcc1-armhf-cross libstdc++6-armhf-cross
+# libstdc++6-4.7-dev-armhf-cross ninja-build
 if test x"${ENABLE_TOOLCHAIN}" = x"llvm"; then
-AC_PATH_PROG(CMAKE,cmake)
-   if test x"${CMAKE}" = x; then
-      AC_MSG_WARN([You need to install cmake to buid LLVM])
-      missing="${missing} smake"
-   fi      
+   AC_PATH_PROG(CMAKE,cmake)
+    if test x"${CMAKE}" = x; then
+       AC_MSG_WARN([You need to install 'cmake' to build LLVM])
+       missing="${missing} cmake"
+     fi
+   AC_PATH_PROG(NINJA,ninja)
+     if test x"${NINJA}" = x; then
+       AC_MSG_WARN([You need to install 'ninja' to build LLVM])
+       missing="${missing} ninja-build"
+     fi
 fi
 AC_SUBST(CMAKE)
+AC_SUBST(NINJA)
 
 # A symbolic link needs to be made in this directory
 #if test -w /opt/linaro -eq 0; then
