@@ -30,7 +30,11 @@ checkout_all()
 {
 #    trace "$*"
 
-    local packages="$*"
+    if test x"${enable_toolchain}" = x"llvm"; then    
+	local packages="llvm-project-submodule"
+    else
+	local packages="$*"
+    fi
 
     for i in ${packages}; do
 	local package=$i

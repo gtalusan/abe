@@ -19,7 +19,7 @@
 build_llvm() {
     trace "$*"
 
-    local component="llvm-proj"
+    local component="llvm-project-submodule"
     local revision=
     local builddir=
 
@@ -44,9 +44,15 @@ build_llvm() {
 
 	mkdir -p ${builddir}
 	pushd ${builddir}
-        notice "Building llvm-proj, current component $i"
+        notice "Building ${component}, current component $i"
 	${cmake} ${srcdir}/$i
-#	${cmake} --build .
+	# -DCMAKE_BUILD_TYPE=$build_type
+        #    -DLLVM_BUILD_TESTS=True
+        #    -DLLVM_ENABLE_ASSERTIONS=True
+        #    -DPYTHON_EXECUTABLE=/usr/bin/python2
+        #    -DCMAKE_INSTALL_PREFIX=$install_dir
+	${cmake} --build .
+	${cmake} -DCMAKE_INSTALL_PREFIX=${prefix} --build . --target install
 	popd
     done
 
@@ -603,10 +609,6 @@ make_install()
 #    trace "$*"
 
     local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
-
-    if test x"${component}" = x"llvm-proj"; then
-	dryrun "cd ${builddir} && cmake --build , --target install "
-    fi
 
     # Do not use -j for 'make install' because several build systems
     # suffer from race conditions. For instance in GCC, several

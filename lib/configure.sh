@@ -54,23 +54,19 @@ configure_build()
 	dryrun "mkdir -p \"${builddir}\""
     fi
 
-    if test x"${component}" = x"llvm-proj"; then
-	dryrun "cd ${builddir} && cmake ${srcdir}"
-    else
-	if test ! -f "${srcdir}/configure" -a x"${dryrun}" != x"yes"; then
-	    warning "No configure script in ${srcdir}!"
-            # not all packages commit their configure script, so if it has autogen,
-            # then run that to create the configure script.
-	    if test -f ${srcdir}/autogen.sh; then
-		(cd ${srcdir} && ./autogen.sh)
-	    fi
-	    if test ! -f "${srcdir}/configure"; then
-		error "No configure script in ${srcdir}!"
-		return 1
-	    fi
+    if test ! -f "${srcdir}/configure" -a x"${dryrun}" != x"yes"; then
+	warning "No configure script in ${srcdir}!"
+        # not all packages commit their configure script, so if it has autogen,
+        # then run that to create the configure script.
+	if test -f ${srcdir}/autogen.sh; then
+	    (cd ${srcdir} && ./autogen.sh)
+	fi
+	if test ! -f "${srcdir}/configure"; then
+	    error "No configure script in ${srcdir}!"
+	    return 1
 	fi
     fi
-
+    
     local opts=""
     if test x"$2" = x"gdbserver"; then
 	local toolname="gdbserver"
