@@ -1,6 +1,0 @@
-[submodule "lld"]
-	path = lld
-	url = ssh://git@welcomehome.org/home/git/llvm/lld.git
-[submodule "lldb"]
-	path = lldb
-	url = ssh://git@welcomehome.org/home/git/llvm/lldb.git
