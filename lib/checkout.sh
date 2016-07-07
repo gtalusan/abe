@@ -193,33 +193,6 @@ checkout()
 		    rm -f ${local_builds}/git$$.lock
 		    return 1
 		fi
-		if test -e ${srcdir}/.gitmodules; then
-		    dryrun "(cd ${srcdir} && git submodule init)"
-		    if test $? -gt 0; then
-			error "Couldn't init submodules in ${srcdir}!"
-		    fi
-		fi
-		# If there are submodules, initialize them
-		if test -e ${topgit}/.gitmodules; then
-		    dryrun "cd ${topgit} && git submodule init"
-		    if test $? -gt 0; then
-			error "Couldn't update submodules in ${srcdir}!"
-		    fi
-		fi
-	    fi
-	    # If there are submodules, update them before any other operations
-	    if test -e ${topgit}/.gitmodules; then
-		dryrun "cd ${topgit} && git submodule update"
-		if test $? -gt 0; then
-		    error "Couldn't update submodules in ${srcdir}!"
-		fi
-	    fi
-
-	    if test -e ${srcdir}/.gitmodules; then
-		dryrun "cd ${srcdir} && git submodule update"
-		if test $? -gt 0; then
-		    error "Couldn't update submodules in ${srcdir}!"
-		fi
 	    fi
 
 	    if test ! -d ${srcdir}; then
@@ -249,6 +222,16 @@ checkout()
 			error "Branch ${branch} likely doesn't exist in git repo ${repo}!"
 			rm -f ${local_builds}/git$$.lock
 			return 1
+		    fi
+		    if test -e ${srcdir}/.gitmodules; then
+			dryrun "(cd ${srcdir} && git submodule init)"
+			if test $? -gt 0; then
+			    error "Couldn't init submodules in ${srcdir}!"
+			fi
+			dryrun "(cd ${srcdir} && git submodule update)"
+			if test $? -gt 0; then
+			    error "Couldn't update submodules in ${srcdir}!"
+			    fi
 		    fi
 		fi
 		# dryrun "git_robust clone --local ${local_snapshots}/${repo} ${srcdir}"
