@@ -491,7 +491,7 @@ if test x"${ENABLE_TOOLCHAIN}" = x"llvm"; then
      fi
    AC_PATH_PROG(NINJA,ninja)
      if test x"${NINJA}" = x; then
-       AC_MSG_WARN([You need to install 'ninja' to build LLVM])
+       AC_MSG_WARN([You should install 'ninja' to build LLVM])
        missing="${missing} ninja-build"
      fi
 fi
