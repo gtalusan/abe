@@ -276,19 +276,19 @@ manifest()
 	local url="`get_component_url ${component}`"
 	echo "${component}_url=${url}" >> ${outfile}
 
-	local branch="`get_component_branch ${component}`"
-	if test x"${branch}" != x; then
-	    echo "${component}_branch=${branch}" >> ${outfile}
-	fi
-
-	local revision="`get_component_revision ${component}`"
-	if test x"${revision}" != x; then
-	    echo "${component}_revision=${revision}" >> ${outfile}
-	fi
-
-	local filespec="`get_component_filespec ${component}`"
-	if test x"${filespec}" != x; then
-	    echo "${component}_filespec=${filespec}" >> ${outfile}
+	if test x"${enable_toolchain}" = x"gcc" -o x"${component}" = x"llvm_project_submodule"; then
+	    local branch="`get_component_branch ${component}`"
+	    if test x"${branch}" != x; then
+		echo "${component}_branch=${branch}" >> ${outfile}
+	    fi
+	    local filespec="`get_component_filespec ${component}`"
+	    if test x"${filespec}" != x; then
+		echo "${component}_filespec=${filespec}" >> ${outfile}
+	    fi
+	    local revision="`get_component_revision ${component}`"
+	    if test x"${revision}" != x; then
+		echo "${component}_revision=${revision}" >> ${outfile}
+	    fi
 	fi
 
 	local makeflags="`get_component_makeflags ${component} | sed -e "s:${local_builds}:\$\{local_builds\}:g" -e "s:${sysroots}:\$\{sysroots\}:g"`"
@@ -306,9 +306,11 @@ manifest()
 	    fi
 	fi
 
-	local static="`get_component_staticlink ${component}`"
-	if test "`echo ${component} | grep -c glibc`" -eq 0; then
-	    echo "${component}_staticlink=\"${static}\"" >> ${outfile}
+	if test x"${enable_toolchain}" = x"gcc"; then
+	    local static="`get_component_staticlink ${component}`"
+	    if test "`echo ${component} | grep -c glibc`" -eq 0; then
+		echo "${component}_staticlink=\"${static}\"" >> ${outfile}
+	    fi
 	fi
 
 	if test x"${component}" = x"gcc"; then
@@ -329,10 +331,12 @@ gerrit_revision=${gerrit_revision}
 EOF
     fi
 
-    cat >> ${outfile} <<EOF
+    if test x"${enable_toolchain}" = x"gcc"; then
+	echo "clibrary=${clibrary}" >> ${outfile}
+	target=${target} >> ${outfile}
+    fi
 
-clibrary=${clibrary}
-target=${target}
+    cat >> ${outfile} <<EOF
 
  ##############################################################################
  # Everything below this line is only for informational purposes for developers
