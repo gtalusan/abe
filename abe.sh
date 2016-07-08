@@ -1121,6 +1121,46 @@ while test $# -gt 0; do
 				;;
 			esac
 			;;
+		    # LLVm specific components
+		    llvm-proj*|llvm_proj*)
+			llvm_project_submodule_version="${value}"
+			;;
+		    llvm)
+			llvm_version="${value}"
+			;;
+		    lld)
+			lld_version="${value}"
+			;;
+		    lldb)
+			lldb_version="${value}"
+			;;
+		    clang)
+			clang_version="${value}"
+			;;
+		    libcxx)
+			libcxx_version="${value}"
+			;;
+		    compiler-rt|compiler_rt)
+			compiler_rt_version="${value}"
+			;;
+		    libcxxabi)
+			libcxxabi_version="${value}"
+			;;
+		    libclc)
+			libclc_version="${value}"
+			;;
+		    dragonegg)
+			dragonegg_version="${value}"
+			;;
+		    klee)
+			klee_version="${value}"
+			;;
+		    polly)
+			polly_version="${value}"
+			;;
+		    clang-tools-extra|clang_tools_extra)
+			clang_tools_extra_version="${value}"
+			;;
 		    *)
 			# This will catch unsupported component specifiers like <foo>=
 			error "${name}: Component specified not supported.  See ${abe} --help for supported components."
