@@ -49,10 +49,24 @@ build_llvm() {
 
     local srcdir="`get_component_srcdir ${component}`"
     local branch="`get_component_branch ${component}`"
-    local topgit="`echo ${srcdir} | sed -e 's:\.git.*$:.git:'`"
-
-    local modules="llvm `cd ${srcdir} && git submodule status --recursive | cut -d ' ' -f 3 | grep -v '(.*)'` -e 's:llvm::'"
+    local url="`get_component_url ${component}`"
+    local revision="`get_component_revision ${component}`"
+    # LLVM components have to be built in the proper order.
     local modules="llvm clang libcxx libcxxabi lld lldb"
+#    local modules="`cd ${srcdir} && git submodule status --recursive | cut -d ' ' -f 3 | grep -v '(.*)'`"
+
+    local stamp="`get_stamp_name build ${component} ${2:+$2}`"
+    local stampdir="${local_builds}/${host}/${target}"
+    check_stamp "${stampdir}" ${stamp} ${srcdir} build ${force}
+    ret=$?
+    if test $ret -eq 0; then
+	notice "DEBUG: stamp for ${stamp} returned $?"
+    # 	return 0
+    elif test $ret -eq 255; then
+	# Don't proceed if the srcdir isn't present.  What's the point?
+	warning "no source dir for the stamp!"
+	return 1
+    fi
 
     # LLVM is a little different in that it has a single git repository, and the
     # other components are all under that top level. Since they actually get built
@@ -60,11 +74,12 @@ build_llvm() {
     for i in ${modules}; do
 	collect_data $i
 
-	revision="llvm `cd ${topgit} && git submodule status --recursive $i | sed -e 's:[ \+][a-z0-9]* ::'-e 's: (.*)::'`"
+#	revision="llvm `cd ${topgit} && git submodule status --recursive $i | sed -e 's:[ \+][a-z0-9]* ::'-e 's: (.*)::'`"
 	builddir="`get_component_builddir ${component}`-$i"
 	set_component_builddir $i ${builddir}
 	set_component_revision $i ${revision}
 	set_component_srcdir $i ${srcdir}/$i
+	set_component_url $i ${url}/$i
 
 	mkdir -p ${builddir}
 	pushd ${builddir}
@@ -82,6 +97,8 @@ build_llvm() {
 	fi
 	popd
     done
+
+    create_stamp "${stampdir}" "${stamp}"
 
     local manifest="`manifest`"
 
