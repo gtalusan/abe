@@ -363,7 +363,7 @@ EOF
     if test x"${enable_toolchain}" = x"llvm"; then
 	local srcdir="`get_component_srcdir ${component}`"
 	local topgit="`echo ${srcdir} | sed -e 's:\.git.*$:.git:'`"
-	local packages="`cd ${topgit} && git submodule status --recursive | cut -d ' ' -f 3`"
+	local packages="`cd ${srcdir} && git submodule status --recursive | cut -d ' ' -f 3`"
     else
 	local packages="gcc binutils ${clibrary} abe"
     fi
