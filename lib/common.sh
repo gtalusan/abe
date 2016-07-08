@@ -245,7 +245,8 @@ create_release_tag()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="`echo $1 | tr '-' '_'`"
+
     if test "`component_is_tar ${component}`" = no; then
 	local branch="~`get_component_branch ${component}`"
 	local revision="@`get_component_revision ${component} | grep -o '[0-9a-z][0-9a-z][0-9a-z][0-9a-z][0-9a-z][0-9a-z][0-9a-z][0-9a-z]' | head -1`"
@@ -261,13 +262,13 @@ create_release_tag()
 	    local version="`grep VERSION ${srcdir}/version.h | cut -d ' ' -f 3 | tr -d '\"'`"
 	fi
     fi
-    local rtag="${component}-linaro-${version}"
+    local rtag="${component}-linaro${version:+-${version}}"
     if test x"${release}" = x; then
 	local date="`date +%Y%m%d`"
 	if test x"${component}" = x"glibc"; then
         local branch="`echo ${branch} | tr '/' '-'`"
 	fi
-	local rtag="${rtag}${branch}${revision}-${date}"
+	local rtag="${rtag}${branch}${revision}${date:--${date}}"
     else
 	local rtag="${rtag}-${release}"
 
