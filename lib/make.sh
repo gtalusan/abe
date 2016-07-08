@@ -16,19 +16,43 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # 
 
+# http://llvm.org/docs/HowToCrossCompileLLVM.html
+# -DCMAKE_CROSSCOMPILING=True
+# -DCMAKE_INSTALL_PREFIX=<install-dir>
+# -DLLVM_TABLEGEN=<path-to-host-bin>/llvm-tblgen
+# -DCLANG_TABLEGEN=<path-to-host-bin>/clang-tblgen
+# -DLLVM_DEFAULT_TARGET_TRIPLE=arm-linux-gnueabihf
+# -DLLVM_TARGET_ARCH=ARM
+# -DLLVM_TARGETS_TO_BUILD=ARM
+# -DCMAKE_CXX_FLAGS='-march=armv7-a -mcpu=cortex-a9 -mfloat-abi=hard'
+#
+# '-target arm-linux-gnueabihf' or whatever is the triple of your cross GCC.
+# '--sysroot=/usr/arm-linux-gnueabihf', '--sysroot=/opt/gcc/arm-linux-gnueabihf'
+# or whatever is the location of your GCC’s sysroot (where /lib, /bin etc are).
+#
+# cmake -G Ninja <source-dir> <options above>
+# If you’re using Clang as the cross-compiler, run:
+#    $ CC='clang' CXX='clang++' cmake -G Ninja <source-dir> <options above>
+# To build simply type: ninja then ninja install
 build_llvm() {
     trace "$*"
+
+    if test x"${supdate}" = xyes; then
+	checkout_all
+    fi
 
     local component="llvm-project-submodule"
     local revision=
     local builddir=
 
-    checkout ${component}
+    checkout_all ${component}
 
     local srcdir="`get_component_srcdir ${component}`"
+    local branch="`get_component_branch ${component}`"
     local topgit="`echo ${srcdir} | sed -e 's:\.git.*$:.git:'`"
 
-    local modules="`cd ${topgit} && git submodule status --recursive | cut -d ' ' -f 3`"
+    local modules="llvm `cd ${srcdir} && git submodule status --recursive | cut -d ' ' -f 3 | grep -v '(.*)'` -e 's:llvm::'"
+    local modules="llvm clang libcxx libcxxabi lld lldb"
 
     # LLVM is a little different in that it has a single git repository, and the
     # other components are all under that top level. Since they actually get built
@@ -36,7 +60,7 @@ build_llvm() {
     for i in ${modules}; do
 	collect_data $i
 
-	revision="`cd ${topgit} && git submodule status --recursive $i | cut -d ' ' -f 2`"
+	revision="llvm `cd ${topgit} && git submodule status --recursive $i | sed -e 's:[ \+][a-z0-9]* ::'-e 's: (.*)::'`"
 	builddir="`get_component_builddir ${component}`-$i"
 	set_component_builddir $i ${builddir}
 	set_component_revision $i ${revision}
@@ -45,14 +69,17 @@ build_llvm() {
 	mkdir -p ${builddir}
 	pushd ${builddir}
         notice "Building ${component}, current component $i"
-	${cmake} ${srcdir}/$i
-	# -DCMAKE_BUILD_TYPE=$build_type
-        #    -DLLVM_BUILD_TESTS=True
-        #    -DLLVM_ENABLE_ASSERTIONS=True
-        #    -DPYTHON_EXECUTABLE=/usr/bin/python2
-        #    -DCMAKE_INSTALL_PREFIX=$install_dir
-	${cmake} --build .
-	${cmake} -DCMAKE_INSTALL_PREFIX=${prefix} --build . --target install
+
+	# LLVM build with either cmake or ninja, ninja prefered
+	if test x"${ninja}" = x -a x"${cmake}" != x; then
+#	    ${cmake} -Wno-dev --build ${srcdir}/$i
+	    ${cmake} --build ${srcdir}/$i
+	    ${cmake} -DCMAKE_INSTALL_PREFIX=${prefix} --target install ${srcdir}/$i
+	else
+	    ${cmake} -G Ninja ${srcdir}/$i ${default_configure_flags}
+	    ${ninja}
+	    ${ninja} install
+	fi
 	popd
     done
 

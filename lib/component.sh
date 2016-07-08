@@ -532,7 +532,7 @@ collect_data ()
 	return 0
     fi
 
-    if test -d ${local_builds}/${host}/${target} -a x"${enable_toolchain}" = x"gcc"; then
+    if test -d ${local_builds}/${host}/${target}; then
 	local conf="`find ${local_builds}/${host}/${target} -name ${1}.conf | head -1`"
     else
 	local conf=
