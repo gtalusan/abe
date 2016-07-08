@@ -44,11 +44,6 @@ checkout_all()
 	if test x"${package}" = x"stage1" -o x"${package}" = x"stage2"; then
 	    package="gcc"
 	fi
-	collect_data ${package}
-	if [ $? -ne 0 ]; then
-	    error "collect_data failed"
-	    return 1
-	fi
 
 	local filespec="`get_component_filespec ${package}`"
 	if test "`component_is_tar ${package}`" = no; then
