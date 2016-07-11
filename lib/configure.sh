@@ -119,6 +119,9 @@ configure_build()
 	#     # zlib doesn't support most standard configure options
 	#     local opts="--prefix=${sysroots}/usr"
 	#     ;;
+	cmake*)
+	    local opts="--prefix=${prefix}"
+	    ;;
 	newlib*|libgloss*)
 	    local opts="${opts} --host=${host} --target=${target} --prefix=${sysroots}/usr"
 	    ;;
@@ -186,7 +189,7 @@ configure_build()
 	    if test x"${override_linker}" = x"gold"; then
 		local opts="${opts} --enable-gold=default"
 	    fi
-	    local opts="${opts} --build=${build} --host=${host} --target=${target} --prefix=${prefix}"
+	    local opts="${opts} --build=${build} --host=${host} SHELL=${bash_shell} --target=${target} --prefix=${prefix}"
 	    ;;
 	gdb)
 	    local opts="${opts} --build=${build} --host=${host} --target=${target} --prefix=${prefix}"
@@ -209,11 +212,11 @@ configure_build()
 	warning "${buildir} already configured!"
     else
 	export PATH="${local_builds}/${host}/bin:$PATH"
-	# Don't stop on CONFIG_SHELL if it's set in the environment.
+	# Don't stop on CONFIG_SHELL- if it's set in the environment.
 	if test x"${CONFIG_SHELL}" = x; then
 	    export CONFIG_SHELL=${bash_shell}
 	fi
-	dryrun "(cd ${builddir} && ${CONFIG_SHELL} ${srcdir}/configure SHELL=${bash_shell} ${default_configure_flags} ${opts})"
+	dryrun "(cd ${builddir} && ${CONFIG_SHELL} ${srcdir}/configure ${default_configure_flags} ${opts})"
 	if test $? -gt 0; then
 	    error "Configure of $1 failed."
 	    return 1
