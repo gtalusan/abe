@@ -30,11 +30,7 @@ checkout_all()
 {
 #    trace "$*"
 
-    if test x"${enable_toolchain}" = x"llvm"; then    
-	local packages="llvm-project-submodule"
-    else
-	local packages="$*"
-    fi
+    local packages="$*"
 
     for i in ${packages}; do
 	local package=$i
@@ -44,6 +40,12 @@ checkout_all()
 	if test x"${package}" = x"stage1" -o x"${package}" = x"stage2"; then
 	    package="gcc"
 	fi
+
+	collect_data ${package}
+        if [ $? -ne 0 ]; then
+            error "collect_data failed"
+            return 1
+        fi
 
 	local filespec="`get_component_filespec ${package}`"
 	if test "`component_is_tar ${package}`" = no; then
