@@ -96,7 +96,7 @@ build_llvm() {
 	    cmake --build ${srcdir}/$i
 	    cmake -DCMAKE_INSTALL_PREFIX=${prefix} --target install ${srcdir}/$i
 	else
-	    ${cmake} -G Ninja ${srcdir}/$i ${default_configure_flags}
+	    cmake -G Ninja ${srcdir}/$i ${default_configure_flags}
 	    ${ninja}
 	    ${ninja} install
 	fi
