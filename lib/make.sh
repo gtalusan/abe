@@ -92,13 +92,15 @@ build_llvm() {
 
 	# LLVM build with either cmake or ninja, ninja prefered
 	if test x"${ninja}" = x -a x"${cmake}" != x; then
-#	    cmake -Wno-dev --build ${srcdir}/$i
 	    cmake --build ${srcdir}/$i
 	    cmake -DCMAKE_INSTALL_PREFIX=${prefix} --target install ${srcdir}/$i
 	else
 	    cmake -G Ninja ${srcdir}/$i ${default_configure_flags}
 	    ${ninja}
 	    ${ninja} install
+	    if test x"${runtests}" != x; then
+		${ninja} check-all
+	    fi
 	fi
 	popd
     done
