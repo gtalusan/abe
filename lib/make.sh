@@ -45,8 +45,13 @@ build_llvm() {
     local revision=
     local builddir=
 
-    checkout_all ${component}
-
+    # Build LLVM dependencies
+    local infrastructure="`grep ^depends ${topdir}/config/llvm-project-submodule.conf | tr -d '\"' | sed -e 's:^depends=::'`"
+    checkout_all ${infrastructure} ${component}
+    for i in ${infrastructure}; do
+	build $i
+    done
+    
     local srcdir="`get_component_srcdir ${component}`"
     local branch="`get_component_branch ${component}`"
     local url="`get_component_url ${component}`"
@@ -87,9 +92,9 @@ build_llvm() {
 
 	# LLVM build with either cmake or ninja, ninja prefered
 	if test x"${ninja}" = x -a x"${cmake}" != x; then
-#	    ${cmake} -Wno-dev --build ${srcdir}/$i
-	    ${cmake} --build ${srcdir}/$i
-	    ${cmake} -DCMAKE_INSTALL_PREFIX=${prefix} --target install ${srcdir}/$i
+#	    cmake -Wno-dev --build ${srcdir}/$i
+	    cmake --build ${srcdir}/$i
+	    cmake -DCMAKE_INSTALL_PREFIX=${prefix} --target install ${srcdir}/$i
 	else
 	    ${cmake} -G Ninja ${srcdir}/$i ${default_configure_flags}
 	    ${ninja}
