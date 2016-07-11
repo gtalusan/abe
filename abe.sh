@@ -1244,9 +1244,12 @@ if test ! -z ${do_checkout}; then
 	    build_failure
 	fi
     else
-	infrastructure="`grep ^depends ${topdir}/config/infrastructure.conf | tr -d '\"' | sed -e 's:^depends=::'`"
 	if test x"${enable_toolchain}" = x"gcc"; then
+	    infrastructure="`grep ^depends ${topdir}/config/infrastructure.conf | tr -d '\"' | sed -e 's:^depends=::'`"
 	    builds="${infrastructure} binutils gcc gdb libc"
+	else
+	    infrastructure="`grep ^depends ${topdir}/config/llvm-project-submodule.conf | tr -d '\"' | sed -e 's:^depends=::'`"
+	    builds="${infrastructure} llvm-project-submodule"
 	fi
 	checkout_all ${builds}
 	if test $? -gt 0; then
