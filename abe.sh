@@ -711,6 +711,8 @@ do_makecheck=
 do_excludecheck=
 do_build=
 do_build_stage=stage2
+do_manifest=""
+component_version_set=""
 
 declare -A extraconfig
 
@@ -815,12 +817,8 @@ while test $# -gt 0; do
 	    shift
 	    ;;
 	--manifest*|-m*)
-            manifest_set=1
 	    check_directive $1 manifest "m" $2
-	    import_manifest $2
-	    if test $? -gt 0; then
-	        build_failure
-	    fi
+	    do_manifest=$2
 	    shift
 	    ;;
        # download and install the infrastructure libraries GCC depends on
@@ -1008,6 +1006,7 @@ while test $# -gt 0; do
 
 	    # Test for <foo>= specifiers
 	    if test `echo $1 | grep -c =` -gt 0; then
+		component_version_set=1
 		name="`echo $1 | cut -d '=' -f 1`"
 		value="`echo $1 | cut -d '=' -f 2`"
 		case ${name} in
@@ -1085,12 +1084,23 @@ while test $# -gt 0; do
     fi
 done
 
-if [ "x${target_set}${manifest_set}" = x11 ]; then
+if [ "x${target_set}" = x1 -a ! -z "${do_manifest}" ]; then
   # see https://bugs.linaro.org/show_bug.cgi?id=2059
   error "setting --target with --manifest is not supported"
   build_failure
 fi
 
+if [ "x${component_version_set}" = x1 -a ! -z "${do_manifest}" ]; then
+  error "setting component versions with --manifest is not supported"
+  build_failure
+fi
+
+if [ ! -z "${do_manifest}" ]; then
+    import_manifest "$do_manifest"
+    if test $? -gt 0; then
+        build_failure
+    fi
+fi
 
 # Check disk space. Each builds needs about 3.8G free
 if test x"${space_needed}" = x; then
