@@ -363,9 +363,6 @@ fi
     $CONFIG_SHELL ${abe_dir}/abe.sh ${platform} ${change} --checkout all
 ) 9>${git_reference}.lock
 
-# Also fetch changes from gerrit
-(cd $user_snapshots/gcc.git; git fetch origin '+refs/changes/*:refs/remotes/gerrit/changes/*')
-
 # Now we build the cross compiler, for a native compiler this becomes
 # the stage2 bootstrap build.
 ret=0
