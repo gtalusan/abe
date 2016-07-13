@@ -810,11 +810,31 @@ make_docs()
             # the diststuff target isn't supported by all the subdirectories,
             # so we build both all targets and ignore the error.
             dryrun "make SHELL=${bash_shell} ${make_flags} -w -C ${builddir}/bfd diststuff install-man install-html install-info 2>&1 | tee -a ${builddir}/makedoc.log"
+	    if test $? -ne 0; then
+		error "make docs failed"
+		return 1;
+	    fi
             dryrun "make SHELL=${bash_shell} ${make_flags} -w -C ${builddir}/ld diststuff install-man install-html install-info 2>&1 | tee -a ${builddir}/makedoc.log"
+	    if test $? -ne 0; then
+		error "make docs failed"
+		return 1;
+	    fi
             dryrun "make SHELL=${bash_shell} ${make_flags} -w -C ${builddir}/gas diststuff install-man install-html install-info 2>&1 | tee -a ${builddir}/makedoc.log"
+	    if test $? -ne 0; then
+		error "make docs failed"
+		return 1;
+	    fi
             dryrun "make SHELL=${bash_shell} ${make_flags} -w -C ${builddir}/gprof diststuff install-man install-html install-info 2>&1 | tee -a ${builddir}/makedoc.log"
+	    if test $? -ne 0; then
+		error "make docs failed"
+		return 1;
+	    fi
             dryrun "make SHELL=${bash_shell} ${make_flags} -w -C ${builddir} install-html install-info 2>&1 | tee -a ${builddir}/makedoc.log"
-            return $?
+	    if test $? -ne 0; then
+		error "make docs failed"
+		return 1;
+	    fi
+            return 0
             ;;
         *gdbserver)
             return 0
