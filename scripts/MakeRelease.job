@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 usage() {
     echo "MakeRelease: [options]"
     echo "     --workspace - Specify an alternate workspace"
@@ -86,9 +88,7 @@ update=""
 
 if test x"${toolchain_config}" != x"" \
 	-a x"${toolchain_config}" != x"default"; then
-    # Note, we need to specify ../config/FOO because the build is done
-    # inside _build directory 1 level up from ABE's top.
-    extra="${extra} --extraconfigdir ../config/${toolchain_config}"
+    extra="${extra} --extraconfigdir $abe_dir/config/${toolchain_config}"
 fi
 
 guess="`${abe_dir}/config.guess`"
