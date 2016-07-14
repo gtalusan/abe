@@ -130,7 +130,7 @@ srcs="${gcc} ${binutils} ${glibc} ${manifest}"
 # Build a binary release tarball
 # Remove logfile if present (for some unknown reason)
 rm -f ${logfile}
-local abe_ret=0
+abe_ret=0
 # Canadian cross builds require a Linux hosted cross compiler first
 if test x"${canadian}" = x"true"; then
     $CONFIG_SHELL ${abe_dir}/abe.sh ${update} --release ${release} ${srcs} ${platform} --build all ${libc} ${extra} >> ${logfile}
