@@ -156,6 +156,16 @@ binary_toolchain()
     local destdir="${local_builds}/tmp.$$/${tag}"
     dryrun "mkdir -p ${destdir}"
 
+    # Some mingw packages have a runtime dependency on libwinpthread-1.dll, so a copy
+    # is put in bin so all executables will work.
+    if test "`echo ${host} | grep -c mingw`" -gt 0; then
+	dryrun "cp /usr/${host}/lib/libwinpthread-1.dll ${local_builds}/destdir/${host}/bin/"
+	if test $? -gt 0; then
+	    error "libwinpthread-1.dll not found, win32 executables won't run without it."
+	    return 1
+	fi
+    fi
+
     # The manifest file records the versions of all of the components used to
     # build toolchain.
     dryrun "cp ${manifest} ${local_builds}/destdir/${host}/"
@@ -165,12 +175,6 @@ binary_toolchain()
 	# FIXME: link the sysroot into the toolchain tarball
 	dryrun "mkdir -p  ${destdir}/${target}/libc/"
 	dryrun "rsync -avr ${sysroots}/* ${destdir}/${target}/libc/"
-    fi
-
-    # Some mingw packages have a runtime dependency on libwinpthread-1.dll, so a copy
-    # is put in bin so all executables will work.
-    if test "`echo ${host} | grep -c mingw`" -gt 0 -a -e /usr/${host}/lib/libwinpthread-1.dll; then
-	cp /usr/${host}/lib/libwinpthread-1.dll ${local_builds}/destdir/${host}/bin/
     fi
 
     if test x"${rpmbin}" = x"yes"; then
