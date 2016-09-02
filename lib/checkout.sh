@@ -241,9 +241,9 @@ checkout()
 	    elif test x"${supdate}" = xyes; then
 		# Some packages allow the build to modify the source directory and
 		# that might screw up abe's state so we restore a pristine branch.
-		notice "Updating sources for ${component} in ${srcdir}"
-		local current_branch="`cd ${srcdir} && git branch`"
-		if test "`echo ${current_branch} | grep -c local_`" -eq 0; then
+		# If an upstream branch is configured, try to pull from it
+		if git rev-parse @{upstream} >&/dev/null; then
+		    notice "Updating sources for ${component} in ${srcdir}"
 		    dryrun "(cd ${srcdir} && git stash --all)"
 		    dryrun "(cd ${srcdir} && git reset --hard)"
 		    dryrun "(cd ${srcdir} && git_robust pull)"
@@ -262,6 +262,8 @@ checkout()
 		    # directory)
 		    dryrun "(cd ${srcdir} && git stash --all)"
 		    dryrun "(cd ${srcdir} && git reset --hard)"
+                else
+		    notice "No upstream branch for ${component} in ${srcdir}"
 		fi
 		if test x"${revision}" != x""; then
 		    # No need to pull.  A commit is a single moment in time
