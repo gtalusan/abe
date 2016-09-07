@@ -626,10 +626,6 @@ make_install()
             error "Copy of gcc libs to sysroot failed!"
             return 1
 	fi
-	if test  `echo ${host} | grep -c mingw` -eq 1 -a -e /usr/${host}/lib/libwinpthread-1.dll; then
-	    local builddir="`get_component_builddir ${gcc_version}`-stage2"
-	    cp /usr/${host}/lib/libwinpthread-1.dll ${builddir}/gcc
-	fi
     fi
 
     return 0
