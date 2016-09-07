@@ -620,7 +620,13 @@ make_install()
         return 1
     fi
 
-    if test x"${component}" = x"gcc" -a x"$2" = "xstage2"; then
+    # Copy libs only when building a toolchain where build=host,
+    # otherwise we can't execute ${target}-gcc. In case of a canadian
+    # cross build, the libs have already been installed when building
+    # the first cross-compiler.
+    if test x"${component}" = x"gcc" \
+	-a x"$2" = "xstage2" \
+	-a "`echo ${host} | grep -c mingw`" -eq 0; then
 	dryrun "copy_gcc_libs_to_sysroot \"${local_builds}/destdir/${host}/bin/${target}-gcc --sysroot=${sysroots}\""
 	if test $? != "0"; then
             error "Copy of gcc libs to sysroot failed!"
