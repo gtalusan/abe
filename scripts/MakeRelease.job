@@ -77,7 +77,7 @@ fi
 if test ! -d ${user_workspace}/_build; then
     mkdir -p ${user_workspace}/_build
 else
-    rm -fr ${user_workspace}/_build/* ${user_workspace}/_build/sysroots/*
+    rm -fr ${user_workspace}/_build/*
 fi
 
 # By default, always update all sources
@@ -133,7 +133,6 @@ if test x"${canadian}" = x"true"; then
     $CONFIG_SHELL ${abe_dir}/abe.sh ${update} --release ${release} ${srcs} ${platform} --build all ${libc} ${extra} --tarbin >> ${logfile}
     abe_ret=$?
     host="--host i686-w64-mingw32"
-    rm -fr ${local_builds}/${host}/${target}/
 else
     host=""
 fi
