@@ -77,7 +77,7 @@ main(int argc, char *argv[])
 EOF
 fi
 
-target="`echo ${dir} | egrep -o '(arm|aarch64)[a-z-]*' | sed -e 's:-\$::'`"
+target="`echo ${dir} | egrep -o '(arm|aarch64)[_0-9a-z-]*' | sed -e 's:-\$::'`"
 win32="`echo {$file} | grep -c mingw`"
 
 # Bare metal builds use a specs file
