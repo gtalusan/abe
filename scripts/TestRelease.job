@@ -101,8 +101,10 @@ fi
 
 # See if the compilation worked
 if test -e ${testdir}/hi; then
+    echo Compilation of hello.cpp: SUCCESS
     exit 0
 else
+    echo Compilation of hello.cpp: FAILED
     exit 1
 fi
 
