@@ -80,14 +80,21 @@ fi
 target="`echo ${dir} | egrep -o '(arm|aarch64)[_0-9a-z-]*' | sed -e 's:-\$::'`"
 win32="`echo {$file} | grep -c mingw`"
 
-# Bare metal builds use a specs file
-# Do work for ARM : rdpmon.spec dimon.spec linux.specs profile-ve.spec
-#                   aprofile-validation.specs
-# Don't work for ARM : iq80310.spec nano.specs pid.specs edboot.spec
+# Bare metal builds need special care
 baremetal="`echo ${target} | egrep -c "\-eabi|\-elf"`"
 if test ${baremetal} -gt 0; then
-    rdimon="`find ${testdir} -name rdimon.specs | head -1`"
-    specs="${rdimon:+--specs=${rdimon}}"
+    case ${target} in
+	aarch64*)
+	    # AArch64 needs specs
+	    rdimon="`find ${testdir} -name rdimon.specs | head -1`"
+	    specs="${rdimon:+--specs=${rdimon}}"
+	    ;;
+	arm*)
+	    # ARM does not need specs, but the default cpu implies
+	    # undefined references to __sync_synchronize
+	    specs="--cpu cortex-a9"
+	    ;;
+    esac
 fi
 
 # Compile the test case
