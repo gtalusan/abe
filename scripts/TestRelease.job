@@ -92,7 +92,7 @@ if test ${baremetal} -gt 0; then
 	arm*)
 	    # ARM does not need specs, but the default cpu implies
 	    # undefined references to __sync_synchronize
-	    specs="--cpu cortex-a9"
+	    specs="-mcpu=cortex-a9"
 	    ;;
     esac
 fi
