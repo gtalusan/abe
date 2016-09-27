@@ -108,8 +108,8 @@ fi
 cpu="$($initial_ssh uname -m)" || true
 case "$cpu" in
     aarch64) native_arch=aarch64-linux-gnu ;;
-    armv7l) native_arch=arm-linux-gnueabihf ;;
-    armv7*) native_arch=arm-linux-gnueabi ;;
+    armv*l) native_arch=arm-linux-gnueabihf ;;
+    armv*) native_arch=arm-linux-gnueabi ;;
     i686) native_arch=i686-linux-gnu ;;
     x86_64) native_arch=x86_64-linux-gnu ;;
     "")
