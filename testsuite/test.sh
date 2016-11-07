@@ -741,7 +741,7 @@ test_checkout "${should}" "${testing}" "${package}" "${branch}" "${revision}"
 
 testing="checkout: http://git@<url>/<repo>.git~<branch> should pass with appropriate notice"
 package="abe.git"
-branch='staging'
+branch='branch-used-by-abe-unit-testing'
 revision=""
 should="pass"
 test_checkout "${should}" "${testing}" "${package}" "${branch}" "${revision}"
