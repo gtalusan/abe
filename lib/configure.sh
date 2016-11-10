@@ -23,17 +23,17 @@ configure_build()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
+    local component="$(echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::')"
 
     # Linux isn't a build project, we only need the headers via the existing
     # Makefile, so there is nothing to configure.
     if test x"${component}" = x"linux"; then
 	return 0
     fi
-    local srcdir="`get_component_srcdir ${component}`"
-    local builddir="`get_component_builddir ${component}`${2:+-$2}"
-    local version="`basename ${srcdir}`"
-    local stamp="`get_stamp_name configure ${version} ${2:+$2}`"
+    local srcdir="$(get_component_srcdir ${component})"
+    local builddir="$(get_component_builddir ${component})${2:+-$2}"
+    local version="$(basename ${srcdir})"
+    local stamp="$(get_stamp_name configure ${version} ${2:+$2})"
 
     # this is a hack for eglibc so that the configure script can be found
     if [ x"${component}" = x"eglibc" ]; then
@@ -42,7 +42,7 @@ configure_build()
 
     # Don't look for the stamp in the builddir because it's in builddir's
     # parent directory.
-    local stampdir="`dirname ${builddir}`"
+    local stampdir="$(dirname ${builddir})"
 
     local ret=
     check_stamp "${stampdir}" ${stamp} ${srcdir} configure ${force}
@@ -79,7 +79,7 @@ configure_build()
 	local toolname="${component}"
     fi
   
-    local opts="`get_component_configure ${component} $2`"
+    local opts="$(get_component_configure ${component} $2)"
 
     # See if this component depends on other components. They then need to be
     # built first.
@@ -87,15 +87,15 @@ configure_build()
 	for i in "${depends}"; do
 	    # remove the current build component from the command line arguments
 	    # so we can replace it with the dependent component name.
-	    local args="`echo ${command_line_arguments} | sed -e 's@$1@@'`"
+	    local args="$(echo ${command_line_arguments} | sed -e 's@$1@@')"
 	done
     fi
 
 
     # Force static linking unless dynamic linking is specified
-    local static="`get_component_staticlink ${component}`"
+    local static="$(get_component_staticlink ${component})"
     if test x"${static}" = x"yes"; then
-	if test "`echo ${component} | grep -c glibc`" -eq 0 -a "`echo ${component} | grep -c gdbserver`" -eq 0; then
+	if test "$(echo ${component} | grep -c glibc)" -eq 0 -a "$(echo ${component} | grep -c gdbserver)" -eq 0; then
 	    local opts="${opts} --disable-shared --enable-static"
 	fi
     fi
@@ -106,7 +106,7 @@ configure_build()
     # The release string is usually the date as well, but in YYYY.MM format.
     # For snapshots we add the day field as well.
     if test x"${release}" = x; then
-	local date="`date "+%Y.%m"`"
+	local date="$(date "+%Y.%m")"
     else
 	local date="${release}"
     fi
@@ -178,7 +178,7 @@ configure_build()
 	    else
 		local opts="${opts} ${stage2_flags}"
 	    fi
-	    local version="`echo $1 | sed -e 's#[a-zA-Z\+/:@.]*-##' -e 's:\.tar.*::'`"
+	    local version="$(echo $1 | sed -e 's#[a-zA-Z\+/:@.]*-##' -e 's:\.tar.*::')"
 	    local opts="${opts} --build=${build} --host=${host} --target=${target} --prefix=${prefix}"
 	    ;;
 	binutils)

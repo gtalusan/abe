@@ -29,7 +29,7 @@ regenerate_checksums()
 
     local reldir=$1
 
-    local tag="`basename $1`"
+    local tag="$(basename $1)"
 
     cat <<EOF > ${reldir}/MD5SUMS
 # This file contains the MD5 checksums of the files in the 
@@ -47,7 +47,7 @@ EOF
     xargs md5sum < /tmp/md5sums.$$ 2>&1 | grep -v "\.git" | sed -e "s:${reldir}/::" >> ${reldir}/MD5SUMS
     rm -f /tmp/md5sums.$$
 
-#    for i in `cat /tmp/md5sums`; do
+#    for i in $(cat /tmp/md5sums); do
 #	md5sum $i 2>&1 | sed -e 's:/tmp/::' >> ${reldir}/MD5SUMS
 #    done
     return 0
@@ -67,13 +67,13 @@ release_binutils_src()
 {
     # See if specific component versions were specified at runtime
     if test x"${binutils_version}" = x; then
-	local binutils_version="`grep ^latest= ${topdir}/config/binutils.conf | cut -d '\"' -f 2` | tr -d '\"'"
+	local binutils_version="$(grep ^latest= ${topdir}/config/binutils.conf | cut -d '\"' -f 2) | tr -d '\"'"
     fi
 
-    local srcdir="`get_component_srcdir ${binutils_version}`"
-    local builddir="`get_component_builddir ${binutils_version}`-binutils"
+    local srcdir="$(get_component_srcdir ${binutils_version})"
+    local builddir="$(get_component_builddir ${binutils_version})-binutils"
     # The new combined repository for binutils has GDB too, so we strip that off.
-    local tag="`create_release_tag ${binutils_version} | sed -e 's:-gdb::' -e 's:-binutils::'`"
+    local tag="$(create_release_tag ${binutils_version} | sed -e 's:-gdb::' -e 's:-binutils::')"
 
     dryrun "mkdir -p /tmp/linaro.$$"
     local destdir="/tmp/linaro.$$/${tag}"
@@ -89,12 +89,12 @@ release_binutils_src()
     fi    
 
     # Create .gmo files from .po files.
-    for i in `find ${srcdir} -name '*.po' -type f -print`; do
-        dryrun "msgfmt -o `echo $i | sed -e 's/\.po$/.gmo/'` $i"
+    for i in $(find ${srcdir} -name '*.po' -type f -print); do
+        dryrun "msgfmt -o $(echo $i | sed -e 's/\.po$/.gmo/') $i"
     done
 
     # Copy all the info files and man pages into the release directory
-    local docs="`find ${builddir}/ -name \*.info -o -name \*.1 -o -name \*.7 | sed -e "s:${builddir}/::"`"
+    local docs="$(find ${builddir}/ -name \*.info -o -name \*.1 -o -name \*.7 | sed -e "s:${builddir}/::")"
     for i in ${docs}; do
       	dryrun "cp -f ${builddir}/$i ${destdir}/$i"
     done
@@ -124,11 +124,11 @@ release_gcc_src()
 
     # See if specific component versions were specified at runtime
     if test x"${gcc_version}" = x; then
-	local gcc_version="`grep ^latest= ${topdir}/config/gcc.conf | cut -d '\"' -f 2` | tr -d '\"'"
+	local gcc_version="$(grep ^latest= ${topdir}/config/gcc.conf | cut -d '\"' -f 2) | tr -d '\"'"
     fi
-    local srcdir="`get_component_srcdir ${gcc_version}`"
-    local builddir="`get_component_builddir ${gcc_version}`-stage2"
-    local tag="`create_release_tag ${gcc_version} | sed -e 's:[-~]linaro-::' | tr '~' '-'`"
+    local srcdir="$(get_component_srcdir ${gcc_version})"
+    local builddir="$(get_component_builddir ${gcc_version})-stage2"
+    local tag="$(create_release_tag ${gcc_version} | sed -e 's:[-~]linaro-::' | tr '~' '-')"
     local destdir="${local_builds}/linaro.$$/${tag}"
 
     dryrun "mkdir -p ${local_builds}/linaro.$$"
@@ -181,8 +181,8 @@ install_gcc_docs()
     dryrun ". ${srcdir}/gcc/doc/install.texi2html"
 
     # Create .gmo files from .po files.
-    for i in `find ${destdir} -name '*.po' -type f -print`; do
-        dryrun "msgfmt -o `echo $i | sed -e 's/\.po$/.gmo/'` $i"
+    for i in $(find ${destdir} -name '*.po' -type f -print); do
+        dryrun "msgfmt -o $(echo $i | sed -e 's/\.po$/.gmo/') $i"
     done
 
     # Make a man alias instead of copying the entire man page for G++
@@ -191,9 +191,9 @@ install_gcc_docs()
     fi
 
     # Copy all the info files and man pages into the release directory
-    local docs="`find ${builddir}/ -name \*.info -o -name \*.1 -o -name \*.7 | sed -e "s:${builddir}/::"`"
+    local docs="$(find ${builddir}/ -name \*.info -o -name \*.1 -o -name \*.7 | sed -e "s:${builddir}/::")"
     for i in ${docs}; do
-	if test `echo $i | grep -c "\.so\.1"` -eq 0; then
+	if test $(echo $i | grep -c "\.so\.1") -eq 0; then
       	    dryrun "cp -fv ${builddir}/$i ${destdir}/gcc/doc"
 	fi
     done
@@ -211,12 +211,12 @@ edit_changelogs()
 #    trace "$*"
 
     local destdir="$1"
-    local basedir="`dirname $1`"
+    local basedir="$(dirname $1)"
 
     # Update the GCC version, which should look like "4.8-${release}/"
-    local tool="`basename $1`"
-#    local version="`echo $1 | grep -o "[0-9]\.[0-9]-[0-9\.]*"`"
-    local version="`echo $1 | grep -o "[0-9]\.[0-9].*/" | tr -d '/'`"
+    local tool="$(basename $1)"
+#    local version="$(echo $1 | grep -o "[0-9]\.[0-9]-[0-9\.]*")"
+    local version="$(echo $1 | grep -o "[0-9]\.[0-9].*/" | tr -d '/')"
     if test -d ${destdir}; then
 	rm -f ${destdir}/LINARO-VERSION
 	echo "${version}" > ${destdir}/LINARO-VERSION
@@ -227,25 +227,25 @@ edit_changelogs()
     # Jenkins sets these to the name of the requestor. If not set, then we
     # use git, otherwise we wind up with buildslave@locahost.
     if test x"${BUILD_USER_FIRST_NAME}" = x -a x"${BUILD_USER_LAST_NAME}" = x -a x"${BUILD_USER_ID}" = x; then
-	local fullname="`git config user.name`"
-	local email="`git config user.email`"
+	local fullname="$(git config user.name)"
+	local email="$(git config user.email)"
     else
 	local fullname="${BUILD_USER_FIRST_NAME}.${BUILD_USER_LAST_NAME}"
 	local email="${BUILD_USER_ID}"
     fi
 
-    local date="`date +%Y-%m-%d`"
+    local date="$(date +%Y-%m-%d)"
 
     # Get all the ChangeLog files.
-    local clogs="`find ${basedir}/ -name ChangeLog`"
+    local clogs="$(find ${basedir}/ -name ChangeLog)"
 
     # For a dryrun, don't actually edit any ChangeLog files.
     if test x"${dryrun}" = x"no"; then
-	local verstr="`echo "${tool}" | tr "[:lower:]" "[:upper:]"` Linaro ${version}"
+	local verstr="$(echo "${tool}" | tr "[:lower:]" "[:upper:]") Linaro ${version}"
 	for i in ${clogs}; do
 	    # Don't do anything if the entry has already been updated.
 	    if test -e $i.linaro; then
-		if test "`grep -c "${version}" $i.linaro`" -eq 1; then
+		if test "$(grep -c "${version}" $i.linaro)" -eq 1; then
 		    continue
 		fi
      		mv $i.linaro /tmp/
@@ -270,11 +270,11 @@ release_gdb_src()
 
     # See if specific component versions were specified at runtime
     if test x"${gdb_version}" = x; then
-	local gdb_version="`grep ^latest= ${topdir}/config/gdb.conf | cut -d '\"' -f 2` | tr -d '\"'"
+	local gdb_version="$(grep ^latest= ${topdir}/config/gdb.conf | cut -d '\"' -f 2) | tr -d '\"'"
     fi
-    local srcdir="`get_component_srcdir ${gdb_version}`"
+    local srcdir="$(get_component_srcdir ${gdb_version})"
     # The new combined repository for GDB has Binutils too, so we strip that off.
-    local tag="`create_release_tag ${gdb_version} | sed -e 's:binutils-::'`"
+    local tag="$(create_release_tag ${gdb_version} | sed -e 's:binutils-::')"
     local destdir="/tmp/linaro.$$/${tag}"
 
     # make a link with the correct name for the tarball's source directory
@@ -343,9 +343,9 @@ sysroot_install_script()
 #    trace "$*"
 
     local script=$1/INSTALL-SYSROOT.sh
-    local tag="`basename $1`"
+    local tag="$(basename $1)"
 
-    local sysroot="`${target}-gcc -print-sysroot`"
+    local sysroot="$(${target}-gcc -print-sysroot)"
     if test ! -e ${script}; then
 	cat <<EOF > ${script}
 #!/bin/sh

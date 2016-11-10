@@ -19,7 +19,7 @@ set -e
 set -o pipefail
 
 # Improve debug logs
-PRGNAME=`basename $0`
+PRGNAME=$(basename $0)
 PS4='+ $PRGNAME: ${FUNCNAME+"$FUNCNAME : "}$LINENO: '
 
 usage()
@@ -42,7 +42,7 @@ abe_dir="$(cd $(dirname $0); pwd)"
 
 # This is where all the builds go
 if test x"${WORKSPACE}" = x; then
-    WORKSPACE="`pwd`"
+    WORKSPACE="$(pwd)"
 fi
 user_workspace="${WORKSPACE}"
 
@@ -97,7 +97,7 @@ rebuild=true
 
 orig_parameters="$@"
 
-OPTS="`getopt -o s:g:c:w:o:l:rt:b:h -l override:,gcc-branch:,snapshots:,gitrepo:,abe:,workspace:,options:,logserver:,logname:,languages:,runtests,target:,testcontainerfile:,bootstrap,help,excludecheck:,norebuild,extraconfig: -- "$@"`"
+OPTS="$(getopt -o s:g:c:w:o:l:rt:b:h -l override:,gcc-branch:,snapshots:,gitrepo:,abe:,workspace:,options:,logserver:,logname:,languages:,runtests,target:,testcontainerfile:,bootstrap,help,excludecheck:,norebuild,extraconfig: -- "$@")"
 while test $# -gt 0; do
     case $1 in
 	--gcc-branch) change="$change gcc=$2"; shift ;;
@@ -124,14 +124,14 @@ done
 
 # Non matrix builds use node_selector, but matrix builds use NODE_NAME
 if test x"${node_selector}" != x; then
-    node="`echo ${node_selector} | tr '-' '_'`"
+    node="$(echo ${node_selector} | tr '-' '_')"
     job=${JOB_NAME}
 else
-    node="`echo ${NODE_NAME} | tr '-' '_'`"
-    job="`echo ${JOB_NAME}  | cut -d '/' -f 1`"
+    node="$(echo ${NODE_NAME} | tr '-' '_')"
+    job="$(echo ${JOB_NAME}  | cut -d '/' -f 1)"
 fi
 
-arch="`uname -m`"
+arch="$(uname -m)"
 
 if [ x"$logserver" = x"" -a x"$logname" != x"" ]; then
     echo "ERROR: \$logname is not provided, but \$logserver is set to $logserver"
@@ -213,12 +213,12 @@ done
 # Test the config parameters from the Jenkins Build Now page
 
 # See if we're supposed to build a source tarball
-if test x"${tarsrc}" = xtrue -o "`echo $user_options | grep -c -- --tarsrc`" -gt 0; then
+if test x"${tarsrc}" = xtrue -o "$(echo $user_options | grep -c -- --tarsrc)" -gt 0; then
     tars="--tarsrc"
 fi
 
 # See if we're supposed to build a binary tarball
-if test x"${tarbin}" = xtrue -o "`echo $user_options | grep -c -- --tarbin`" -gt 0; then
+if test x"${tarbin}" = xtrue -o "$(echo $user_options | grep -c -- --tarbin)" -gt 0; then
     tars="${tars} --tarbin "
 fi
 
@@ -226,8 +226,8 @@ fi
 if ! test x"${release}" = xsnapshot -o x"${release}"; then
     releasestr="--release ${release}"
 fi
-if test "`echo $user_options | grep -c -- --release`" -gt 0; then
-    release="`echo  $user_options | grep -o -- "--release [a-zA-Z0-9]* " | cut -d ' ' -f 2`"
+if test "$(echo $user_options | grep -c -- --release)" -gt 0; then
+    release="$(echo  $user_options | grep -o -- "--release [a-zA-Z0-9]* " | cut -d ' ' -f 2)"
     releasestr="--release ${release}"
 fi
 
@@ -292,14 +292,14 @@ fi
 if [ x"$(uname -m)" = x"x86_64" ]; then
     wget http://people.linaro.org/~maxim.kuvyrkov/qemu-20160707.tgz
     tar xf qemu-20160707.tgz
-    export PATH="`pwd`/qemu-wip:$PATH"
+    export PATH="$(pwd)/qemu-wip:$PATH"
     for i in aarch64 arm armeb; do
 	qemu-$i --version
     done
 fi
 
 # Print some information about the build machine
-echo Running on `hostname`
+echo Running on $(hostname)
 uname -a
 lsb_release -a
 cat /proc/cpuinfo
@@ -401,14 +401,14 @@ License-Type: open
 EOF
 
 if test x"${tars}" = x; then
-    # date="`${gcc} --version | head -1 | cut -d ' ' -f 4 | tr -d ')'`"
-    date="`date +%Y%m%d`"
+    # date="$(${gcc} --version | head -1 | cut -d ' ' -f 4 | tr -d ')')"
+    date="$(date +%Y%m%d)"
 else
     date=${release}
 fi
 
 # Setup the remote directory for tcwgweb
-xgcc="`find ${user_workspace} -name xgcc`"
+xgcc="$(find ${user_workspace} -name xgcc)"
 
 # If we can't find GCC, our build failed, so don't continue
 if test x"${xgcc}" = x; then
@@ -428,7 +428,7 @@ fi
 
 echo "Build by ${requestor} on ${NODE_NAME} with parameters: $orig_parameters"
 
-manifest="`find ${user_workspace}/_build/builds/ -name destdir -prune -o -name \*manifest.txt -print`"
+manifest="$(find ${user_workspace}/_build/builds/ -name destdir -prune -o -name \*manifest.txt -print)"
 if test x"${manifest}" != x; then
     echo "node=${node}" >> ${manifest}
     echo "requestor=${requestor}" >> ${manifest}
@@ -455,11 +455,11 @@ if test x"${logserver}" != x""; then
 # way to get the results into Jenkins.
 #if test x"${sums}" != x; then
 #    for i in ${sums}; do
-#	name="`basename $i`"
+#	name="$(basename $i)"
 #	${abe_dir}/sum2junit.sh $i $user_workspace/${name}.junit
 #	cp $i ${user_workspace}/results/${dir}
 #    done
-#    junits="`find ${user_workspace} -name *.junit`"
+#    junits="$(find ${user_workspace} -name *.junit)"
 #    if test x"${junits}" = x; then
 #	echo "Bummer, no junit files yet..."
 #    fi
@@ -470,13 +470,13 @@ if test x"${logserver}" != x""; then
 fi
 
 # Find all the test result files.
-sums="`find ${user_workspace} -name \*.sum -not -path "*/gdb/testsuite/outputs/*"`"
+sums="$(find ${user_workspace} -name \*.sum -not -path "*/gdb/testsuite/outputs/*")"
 
 # Canadian Crosses are a win32 hosted cross toolchain built on a Linux
 # machine.
 if test x"${canadian}" = x"true"; then
     $CONFIG_SHELL ${abe_dir}/abe.sh --disable update ${change} ${platform} --build all
-    distro="`lsb_release -sc`"
+    distro="$(lsb_release -sc)"
     # Ubuntu Lucid uses an older version of Mingw32
     if test x"${distro}" = x"lucid"; then
 	$CONFIG_SHELL ${abe_dir}/abe.sh --disable update ${change} ${tars} --host=i586-mingw32msvc ${platform} --build all
@@ -498,12 +498,12 @@ if test x"${logserver}" != x"" && test x"${sums}" != x -o x"${runtests}" != x"tr
 	cp ${sums} ${test_logs} ${logs_dir}/ || status=1
 	
 	# Copy over the logs from make check, which we need to find testcase errors.
-	checks="`find ${user_workspace} -name check\*.log`"
+	checks="$(find ${user_workspace} -name check\*.log)"
 	cp ${checks} ${logs_dir}/ || status=1
     fi
 
     # Copy over the build logs
-    logs="`find ${user_workspace} -name make\*.log`"
+    logs="$(find ${user_workspace} -name make\*.log)"
     cp ${logs} ${logs_dir}/ || status=1
 
     # Copy stdout and stderr output from abe.
@@ -516,15 +516,15 @@ if test x"${logserver}" != x"" && test x"${sums}" != x -o x"${runtests}" != x"tr
     echo "Uploaded test results and build logs to ${logserver}:${basedir}/${dir}/ with status: $status"
 
     if test x"${tarsrc}" = xtrue -a x"${release}" != x; then
-	allfiles="`ls ${user_snapshots}/*${release}*.xz`"
-	srcfiles="`echo ${allfiles} | egrep -v "arm|aarch"`"
+	allfiles="$(ls ${user_snapshots}/*${release}*.xz)"
+	srcfiles="$(echo ${allfiles} | egrep -v "arm|aarch")"
 	scp ${srcfiles} ${logserver}:/home/abe/var/snapshots/ || status=1
 	rm -f ${srcfiles} || status=1
     fi
 
     if test x"${tarbin}" = xtrue -a x"${release}" != x; then
-	allfiles="`ls ${user_snapshots}/*${release}*.xz`"
-	binfiles="`echo ${allfiles} | egrep "arm|aarch"`"
+	allfiles="$(ls ${user_snapshots}/*${release}*.xz)"
+	binfiles="$(echo ${allfiles} | egrep "arm|aarch")"
 	scp ${binfiles} ${logserver}:/work/space/binaries/ || status=1
 	rm -f ${binfiles} || status=1
     fi

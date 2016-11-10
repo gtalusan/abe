@@ -48,8 +48,8 @@ checkout_all()
 	    return 1
 	fi
 
-	local filespec="`get_component_filespec ${package}`"
-	if test "`component_is_tar ${package}`" = no; then
+	local filespec="$(get_component_filespec ${package})"
+	if test "$(component_is_tar ${package})" = no; then
  	    local checkout_ret=
 	    checkout ${package}
 	    checkout_ret=$?
@@ -73,7 +73,7 @@ checkout_all()
     done
 
     # Reset to the stored value
-    if test `echo ${host} | grep -c mingw` -eq 1 -a x"${tarbin}" = xyes; then
+    if test $(echo ${host} | grep -c mingw) -eq 1 -a x"${tarbin}" = xyes; then
 	files="${files} installjammer-1.2.15.tar.gz"
     fi
 
@@ -91,7 +91,7 @@ update_checkout_branch()
 {
     local component="$1"
     local srcdir=
-    srcdir="`get_component_srcdir ${component}`" || return 1
+    srcdir="$(get_component_srcdir ${component})" || return 1
     notice "Updating sources for ${component} in ${srcdir}"
     dryrun "git -C ${srcdir} checkout -B ${branch} origin/${branch}"
     if test $? -gt 0; then
@@ -122,9 +122,9 @@ update_checkout_tag()
 {
     local component="$1"
     local srcdir=
-    srcdir="`get_component_srcdir ${component}`" || return 1
+    srcdir="$(get_component_srcdir ${component})" || return 1
     local branch=
-    branch="`get_component_branch ${component}`" || return 1
+    branch="$(get_component_branch ${component})" || return 1
     if git -C ${srcdir} rev-parse -q --verify origin/${branch}; then
 	error "Unexpectedly not tracking origin/${branch}"
 	return 1
@@ -134,8 +134,8 @@ update_checkout_tag()
 	error "Can't reset to ${branch}"
 	return 1
     fi
-    local currev="`git -C ${srcdir} rev-parse HEAD`"
-    local tagrev="`git -C ${srcdir} rev-parse ${branch}`"
+    local currev="$(git -C ${srcdir} rev-parse HEAD)"
+    local tagrev="$(git -C ${srcdir} rev-parse ${branch})"
     if test x${currev} != x${tagrev}; then
 	dryrun "git -C ${srcdir} stash && git -C ${srcdir} reset --hard ${branch}"
         if test $? -gt 0; then
@@ -158,28 +158,28 @@ checkout()
     # written today (and failures are therefore untestable) but propagate
     # errors anyway, in case that situation changes.
     local url=
-    url="`get_component_url ${component}`" || return 1
+    url="$(get_component_url ${component})" || return 1
     local branch=
-    branch="`get_component_branch ${component}`" || return 1
+    branch="$(get_component_branch ${component})" || return 1
     local revision=
-    revision="`get_component_revision ${component}`" || return 1
+    revision="$(get_component_revision ${component})" || return 1
     local srcdir=
-    srcdir="`get_component_srcdir ${component}`" || return 1
+    srcdir="$(get_component_srcdir ${component})" || return 1
     local repo=
-    repo="`get_component_filespec ${component}`" || return 1
-    local protocol="`echo ${url} | cut -d ':' -f 1`"    
+    repo="$(get_component_filespec ${component})" || return 1
+    local protocol="$(echo ${url} | cut -d ':' -f 1)"    
     local repodir="${url}/${repo}"
     local new_srcdir=false
 
     # gdbserver is already checked out in the GDB source tree.
     if test x"${component}" = x"gdbserver"; then
         local gdbsrcdir;
-        gdbsrcdir="`get_component_srcdir gdb`" || return 1
+        gdbsrcdir="$(get_component_srcdir gdb)" || return 1
         if [ x"${srcdir}" != x"${gdbsrcdir}/gdb/gdbserver" ]; then
             error "gdb and gdbserver srcdirs don't match"
             return 1
         fi
-	local gdbrevision="`get_component_revision gdb`"
+	local gdbrevision="$(get_component_revision gdb)"
         if [ x"${gdbrevision}" = x"" ]; then
             error "no gdb revision found"
             return 1
@@ -283,7 +283,7 @@ checkout()
 	    fi
 
 	    if test x"${dryrun}" != xyes; then
-		local newrev="`git -C ${srcdir} log --format=format:%H -n 1`"
+		local newrev="$(git -C ${srcdir} log --format=format:%H -n 1)"
 	    else
 		local newrev="unknown/dryrun"
 	    fi

@@ -405,7 +405,7 @@ if test $# -lt 1; then
     exit 1
 fi
 
-if test "`echo $* | grep -c -- -help`" -gt 0; then
+if test "$(echo $* | grep -c -- -help)" -gt 0; then
     help
     exit 0
 fi
@@ -419,9 +419,9 @@ else
 fi
 
 # load commonly used functions
-abe="`which $0`"
+abe="$(which $0)"
 topdir="${abe_path}"
-abe="`basename $0`"
+abe="$(basename $0)"
 
 . "${topdir}/lib/common.sh" || exit 1
 
@@ -551,8 +551,8 @@ crosscheck_unit_test()
 
 set_package()
 {
-    local package="`echo $1 | cut -d '=' -f 1`"
-    local setting="`echo $* | cut -d '=' -f 2-`"
+    local package="$(echo $1 | cut -d '=' -f 1)"
+    local setting="$(echo $* | cut -d '=' -f 2-)"
 
     case ${package} in
 	languages)
@@ -628,7 +628,7 @@ check_directive()
 
     if test x"$directive" = x; then
 	error "--${long} requires a directive.  See --usage for details.' "
-    elif test `echo ${directive} | egrep -c "^\-+"` -gt 0; then
+    elif test $(echo ${directive} | egrep -c "^\-+") -gt 0; then
 	error "--${long} requires a directive.  ${abe} found the next -- switch.  See --usage for details.' "
     else
 	return 0
@@ -658,7 +658,7 @@ check_optional_directive()
 	directive="$default"
 	echo "$directive"
 	return 1
-    elif test `echo ${directive} | egrep -c "^\-+"` -gt 0; then
+    elif test $(echo ${directive} | egrep -c "^\-+") -gt 0; then
 	notice "There is no directive accompanying this switch.  Using --$long $default."
 	directive="$default"
 	echo "$directive"
@@ -673,22 +673,22 @@ check_optional_directive()
 get_build_machine_info()
 {
     if test x"$1" = x; then
-	cpus="`getconf _NPROCESSORS_ONLN`"
-	libc="`getconf GNU_LIBC_VERSION`"
-	kernel="`uname -r`"
-	build_arch="`uname -p`"
-	hostname="`uname -n`"
-	distribution="`lsb_release -sc`"
+	cpus="$(getconf _NPROCESSORS_ONLN)"
+	libc="$(getconf GNU_LIBC_VERSION)"
+	kernel="$(uname -r)"
+	build_arch="$(uname -p)"
+	hostname="$(uname -n)"
+	distribution="$(lsb_release -sc)"
     else
 	# FIXME: this assumes the user has their ssh keys setup to the point
 	# where the don't need a password but is secure.
 	echo "Getting config info from $1"
-	cpus="`ssh $1 getconf _NPROCESSORS_ONLN`"
-	libc="`ssh $1 getconf GNU_LIBC_VERSION`"
-	kernel="`ssh $1 uname -r`"
-	build_arch="`ssh $1 uname -p`"
-	hostname="`ssh $1 uname -n`"
-	distribution="`ssh $1 lsb_release -sc`"	
+	cpus="$(ssh $1 getconf _NPROCESSORS_ONLN)"
+	libc="$(ssh $1 getconf GNU_LIBC_VERSION)"
+	kernel="$(ssh $1 uname -r)"
+	build_arch="$(ssh $1 uname -p)"
+	hostname="$(ssh $1 uname -n)"
+	distribution="$(ssh $1 lsb_release -sc)"	
     fi
 }
 
@@ -785,7 +785,7 @@ while test $# -gt 0; do
 	# This is after --checkout because we want to catch every other usage
 	# of check* but NOT 'checkout'.
 	--check)
-	    tmp_do_makecheck="`check_optional_directive check "$2" all`"
+	    tmp_do_makecheck="$(check_optional_directive check "$2" all)"
 	    ret=$?
 
 	    # do_makecheck already contains the directive or 'all'.  This
@@ -827,8 +827,8 @@ while test $# -gt 0; do
 	    ;;
 	--extraconfig)
 	    check_directive extraconfig $2
-	    extraconfig_tool="`echo $2 | cut -d '=' -f 1`"
-	    extraconfig_val="`echo $2 | cut -d '=' -f 2`"
+	    extraconfig_tool="$(echo $2 | cut -d '=' -f 1)"
+	    extraconfig_val="$(echo $2 | cut -d '=' -f 2)"
 	    if [ x"$extraconfig_val" != x"" ]; then
 		extraconfig[${extraconfig_tool}]="${extraconfig[${extraconfig_tool}]} ${extraconfig_val}"
 	    else
@@ -843,7 +843,7 @@ while test $# -gt 0; do
 		error "Parameter for --extraconfigdir $2 is not a directory."
 		build_failure
 	    fi
-	    for i in `ls $2 | grep "\.conf\$"`; do
+	    for i in $(ls $2 | grep "\.conf\$"); do
 		extraconfig_tool="$(basename $i .conf)"
 		extraconfig_val="$2/$i"
 		extraconfig[${extraconfig_tool}]="${extraconfig[${extraconfig_tool}]} ${extraconfig_val}"
@@ -894,7 +894,7 @@ while test $# -gt 0; do
 	    # Test if --target follows the --set command put --set and it's
 	    # directive on to the back of the inputs.  This is because clibrary
 	    # validity depends on the target.
-	    if test "`echo $@ | grep -c "\-targ.*"`" -gt 0; then
+	    if test "$(echo $@ | grep -c "\-targ.*")" -gt 0; then
 		# Push $1 and $2 onto the back of the inputs for later processing.
 		set -- "$@" "$1" "$2"
 		# Shift off them off the front.
@@ -961,7 +961,7 @@ while test $# -gt 0; do
 	    ;;
 	--timeout)
 	    check_directive timeout $2
-	    tmptime="`echo $2 | grep -o "[0-9]*"`"
+	    tmptime="$(echo $2 | grep -o "[0-9]*")"
 	    if test x"${tmptime}" != x; then
 		wget_timeout=${tmptime}
 	    fi
@@ -1022,19 +1022,19 @@ while test $# -gt 0; do
 	    ;;
 	*)
 	    # Look for unsupported -<foo> or --<foo> directives.
-	    if test `echo $1 | grep -Ec "^-+"` -gt 0; then
+	    if test $(echo $1 | grep -Ec "^-+") -gt 0; then
 		error "${1}: Directive not supported.  See ${abe} --help for supported options."
 		build_failure
 	    fi
 
 	    # Test for <foo>= specifiers
-	    if test `echo $1 | grep -c =` -gt 0; then
+	    if test $(echo $1 | grep -c =) -gt 0; then
 		component_version_set=1
-		name="`echo $1 | cut -d '=' -f 1`"
-		value="`echo $1 | cut -d '=' -f 2`"
+		name="$(echo $1 | cut -d '=' -f 1)"
+		value="$(echo $1 | cut -d '=' -f 2)"
 		case ${name} in
 		    binutils)
-			binutils_version="`echo ${value}`"
+			binutils_version="$(echo ${value})"
 			;;
 		    dejagnu)
 			dejagnu_version="${value}"
@@ -1061,7 +1061,7 @@ while test $# -gt 0; do
 			# Test if --target follows one of these clibrary set
 			# commands.  If so, put $1 onto the back of the inputs.
 			# This is because clibrary validity depends on the target.
-			if test "`echo $@ | grep -c "\-targ.*"`" -gt 0; then
+			if test "$(echo $@ | grep -c "\-targ.*")" -gt 0; then
 			    # Push $1 onto the back of the inputs for later processing.
 			    set -- $@ $1
 			    # Shift it off the front.
@@ -1145,7 +1145,7 @@ if test x"${space_needed}" = x; then
   space_needed=4194304
 fi
 if test ${space_needed} -gt 0; then
-  df="`df ${abe_top} | tail -1 | tr -s ' ' | cut -d ' ' -f 4`"
+  df="$(df ${abe_top} | tail -1 | tr -s ' ' | cut -d ' ' -f 4)"
   if test ${df} -lt ${space_needed}; then
       error "Not enough disk space!"
       exit 1
@@ -1244,7 +1244,7 @@ if test ! -z ${do_build}; then
 	    # If we're just building gcc then we need to pick a 'stage'.
 	    # The user might have specified a stage so we use that if
 	    # it's set.
-	    if test `echo ${do_build} | grep -c "gcc"` -gt 0; then
+	    if test $(echo ${do_build} | grep -c "gcc") -gt 0; then
 	        set_build_component_list "${do_build_stage}"
 	    else
 		set_build_component_list "${gitinfo}"
@@ -1261,7 +1261,7 @@ if test $? -ne 0; then
     build_failure
 fi
 
-time="`expr ${SECONDS} / 60`"
+time="$(expr ${SECONDS} / 60)"
 if test ! -z ${do_build}; then
     notice "Complete build process took ${time} minutes"
 elif test ! -z ${do_checkout}; then

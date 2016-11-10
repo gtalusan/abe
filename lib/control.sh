@@ -39,7 +39,7 @@ build_step_CHECKOUT()
 build_step_required[MANIFEST]=1
 build_step_MANIFEST()
 {
-    manifest="`manifest`"
+    manifest="$(manifest)"
 }
 
 build_step_required[BUILD]=1

@@ -74,7 +74,7 @@
 #   they must be called in a subshell using the following convention:
 #
 #   local out=
-#   out="`get_git_<part> <input_string>`"
+#   out="$(get_git_<part> <input_string>)"
 #   if test $? -gt 1; then
 #       # Parser detected malformed input.  Depending on what
 #       # you expect, this might or might-not be an error.
@@ -128,13 +128,13 @@ git_parser()
     # Set to '1' if something in ${in} is malformed.
     local err=0
 
-    local service="`echo "${in}" | sed -n ' s#\(^git\)://.*#\1#p; s#\(^ssh\)://.*#\1#p; s#\(^http\)://.*#\1#p;  s#\(^https\)://.*#\1#p; '`"
+    local service="$(echo "${in}" | sed -n ' s#\(^git\)://.*#\1#p; s#\(^ssh\)://.*#\1#p; s#\(^http\)://.*#\1#p;  s#\(^https\)://.*#\1#p; ')"
 
     # Do this early because this is called often and we don't need all that
     # other parsing in this case.
     if test x"${part}" = x"service"; then
 	# An http service with .git in the url is actually a git service.
-	if test "`echo ${service} | grep -c http`" -gt 0 -a "`echo ${in} | egrep -c "\.git"`" -gt 0; then
+	if test "$(echo ${service} | grep -c http)" -gt 0 -a "$(echo ${in} | egrep -c "\.git")" -gt 0; then
 	    service="git"
         # An ssh service is actually a git service.
         elif test x"${service}" = x"ssh"; then
@@ -149,17 +149,17 @@ git_parser()
 	case ${part} in
 	    repo)
 		local repo=""
-		repo="`echo ${in} | sed -e "s#lp:[/]*##" -e 's:/.*::'`"
+		repo="$(echo ${in} | sed -e "s#lp:[/]*##" -e 's:/.*::')"
 		echo "${repo}"
 		;;
 	    branch)
-		local hastilde="`echo "${in}" | grep -c '\~'`"
-		local hasslash="`echo "${in}" | grep -c '\/'`"
+		local hastilde="$(echo "${in}" | grep -c '\~')"
+		local hasslash="$(echo "${in}" | grep -c '\/')"
 		if test ${hastilde} -gt 0; then
 		    # Grab everything to the right of the ~
-		    branch="`echo ${in} | sed -e 's:.*~\(.*\):\1:'`"
+		    branch="$(echo ${in} | sed -e 's:.*~\(.*\):\1:')"
 		elif test ${hasslash} -gt 0; then
-		    branch="`basename ${in}`"
+		    branch="$(basename ${in})"
 		fi
 		echo ${branch}
 		# otherwise there's no branch.
@@ -169,9 +169,9 @@ git_parser()
 		;;
 	    tool)
 		# Strip service information and any trailing branch information.
-		local tool="`echo ${in} | sed -e 's/lp://' -e 's:/.*::'`"
+		local tool="$(echo ${in} | sed -e 's/lp://' -e 's:/.*::')"
 		# Strip superflous -linaro tags
-		local tool="`echo ${tool} | sed -e 's:-linaro::'`"
+		local tool="$(echo ${tool} | sed -e 's:-linaro::')"
 		echo ${tool}
 		;;
 	    *)
@@ -181,12 +181,12 @@ git_parser()
     fi
 
     # This is tarball and it is unique
-    if test "`echo ${in} | egrep -c "\.tar"`" -gt 0; then
+    if test "$(echo ${in} | egrep -c "\.tar")" -gt 0; then
 	case ${part} in
 	    repo)
 		local repo=""
-		repo="`basename ${in}`"
-		repo="`echo ${repo} | sed -e 's:-[0-9].*::'`"
+		repo="$(basename ${in})"
+		repo="$(echo ${repo} | sed -e 's:-[0-9].*::')"
 		echo "${repo}"
 		;;
 	    url)
@@ -194,19 +194,19 @@ git_parser()
 		;;
 	    tool)
 		# Special case binutils-gdb
-		tool="`echo ${in} | sed -e 's:\(binutils-gdb\).*:\1:g'`"
+		tool="$(echo ${in} | sed -e 's:\(binutils-gdb\).*:\1:g')"
 		if test x"${tool}" != "xbinutils-gdb"; then
 		    # Otherwise only grab up to the first -
-		    tool="`echo ${in} | sed -e 's:\([^-]*\)-.*:\1:g'`"
+		    tool="$(echo ${in} | sed -e 's:\([^-]*\)-.*:\1:g')"
 	        fi
 		# Strip service or directory information.
-		tool="`basename ${tool}`"
+		tool="$(basename ${tool})"
 
 		echo ${tool}
 		;;
 	    tag)
 		local tag=
-		tag="`echo ${in} | sed -e 's:\.tar.*::' -e 's:-[0-9][0-9][0-9][0-9]\.[0-9][0-9].*::'`"
+		tag="$(echo ${in} | sed -e 's:\.tar.*::' -e 's:-[0-9][0-9][0-9][0-9]\.[0-9][0-9].*::')"
 		echo ${tag}
 		;;
 	    *)
@@ -218,38 +218,38 @@ git_parser()
     # This will only find a username if it follows the <service>://
     # and precedes the first / in the url.  Yes you could
     # get away with http://www<user>@.foo.com/.
-    local user="`echo "${in}" | sed -n "s;^${service}://\([^/]*\)@.*;\1;p"`"
+    local user="$(echo "${in}" | sed -n "s;^${service}://\([^/]*\)@.*;\1;p")"
 
     # This will only find a revision if it is a sequence of
     # alphanumerical characters following the last @ in the line.
-    local revision="`echo "${in}" | sed -n 's/.*@\([[:alnum:]]*$\)/\1/p'`"
+    local revision="$(echo "${in}" | sed -n 's/.*@\([[:alnum:]]*$\)/\1/p')"
 
-    local hasdotgit="`echo "${in}" | grep -c "\.git"`"
-    local hastilde="`echo "${in}" | grep -c '\~'`"
+    local hasdotgit="$(echo "${in}" | grep -c "\.git")"
+    local hastilde="$(echo "${in}" | grep -c '\~')"
 
     # Strip out the <service>::// part.
-    local noservice="`echo "${in}" | sed -e "s#^${service}://##"`"
+    local noservice="$(echo "${in}" | sed -e "s#^${service}://##")"
 
     local secondbase=
     if test ${hasdotgit} -gt 0; then
-	local secondbase="`echo "${noservice}" | sed -e 's#.*\([/].*.git\)#\1#' -e 's#^/##' -e 's#@[[:alnum:]|@]*$##'`"
-	local repo="`echo ${secondbase} | sed -e 's#\(.*\.git\).*#\1#' -e 's#.*/##'`"
+	local secondbase="$(echo "${noservice}" | sed -e 's#.*\([/].*.git\)#\1#' -e 's#^/##' -e 's#@[[:alnum:]|@]*$##')"
+	local repo="$(echo ${secondbase} | sed -e 's#\(.*\.git\).*#\1#' -e 's#.*/##')"
 
 	if test ${hastilde} -gt 0; then
-	    local branch="`echo "${secondbase}" | sed -n 's#.*~\(.*\)$#\1#p'`"
-	    if test "`echo ${branch} | grep -c "^/"`" -gt 0; then
+	    local branch="$(echo "${secondbase}" | sed -n 's#.*~\(.*\)$#\1#p')"
+	    if test "$(echo ${branch} | grep -c "^/")" -gt 0; then
 		error "Malformed input.  Superfluous / after ~. Stripping."
 		err=1
-		local branch="`echo "${branch}" | sed -e 's#^/##'`"
+		local branch="$(echo "${branch}" | sed -e 's#^/##')"
 	    fi 
 	else
-	    local branch="`echo ${secondbase} | sed -e 's#.*\.git##' -e 's#^[/]##' -e 's#@[[:alnum:]|@]*$##'`"
+	    local branch="$(echo ${secondbase} | sed -e 's#.*\.git##' -e 's#^[/]##' -e 's#@[[:alnum:]|@]*$##')"
 	fi
     elif test ${hastilde} -gt 0 -a ${hasdotgit} -lt 1; then
 	# If the service is part of the designator then we have to strip
 	# up to the leading /
 	if test x"${service}" != x; then
-	    local secondbase="`echo "${noservice}" | sed -e "s#[^/]*/##"`"
+	    local secondbase="$(echo "${noservice}" | sed -e "s#[^/]*/##")"
 	else
 	    # Otherwise we process it as if the repo is the leftmost
 	    # element.
@@ -258,23 +258,23 @@ git_parser()
 
 	# We've already processed the revision so strip that (and any trailing
 	# @ symbols) off.
-	local secondbase="`echo "${secondbase}" | sed -e 's#@[[:alnum:]|@]*$##'`"
+	local secondbase="$(echo "${secondbase}" | sed -e 's#@[[:alnum:]|@]*$##')"
 
-	local branch="`echo "${secondbase}" | sed -n 's#.*~\(.*\)$#\1#p'`"
+	local branch="$(echo "${secondbase}" | sed -n 's#.*~\(.*\)$#\1#p')"
 	
-	if test "`echo ${branch} | grep -c "^/"`" -gt 0; then
+	if test "$(echo ${branch} | grep -c "^/")" -gt 0; then
 	    error "Malformed input.  Superfluous / after ~. Stripping."
 	    err=1
-	    local branch="`echo "${branch}" | sed -e 's#^/##'`"
+	    local branch="$(echo "${branch}" | sed -e 's#^/##')"
 	fi 
 
-	local repo="`echo ${secondbase} | sed -e 's#\(.*\)~.*#\1#' -e 's#.*/##'`"
+	local repo="$(echo ${secondbase} | sed -e 's#\(.*\)~.*#\1#' -e 's#.*/##')"
 
 	# Strip trailing trash introduced by erroneous inputs.	
-	local repo="`echo ${repo} | sed -e  's#[[:punct:]]*$##'`"
+	local repo="$(echo ${repo} | sed -e  's#[[:punct:]]*$##')"
     else # no .git and no tilde for branches
 	# Strip off any trailing @<foo> sequences, even erroneous ones.
-	local secondbase="`echo "${noservice}" | sed -e "s#[^/]*/##" -e 's#@[[:alnum:]|@]*$##'`"
+	local secondbase="$(echo "${noservice}" | sed -e "s#[^/]*/##" -e 's#@[[:alnum:]|@]*$##')"
 
 	# If there's not <repo>.git then we can't possibly determine what's 
 	# a branch vs. what's part of the url vs. what's a repository.  We
@@ -282,51 +282,51 @@ git_parser()
 	local branch=
 
 	# The repo name is the content right of the rightmost /
-	local repo="`echo ${secondbase} | sed 's#.*/##'`"
+	local repo="$(echo ${secondbase} | sed 's#.*/##')"
     fi
 
     # Strip trailing trash from the branch left by erroneous inputs.
-    local branch="`echo ${branch} | sed -e 's#[[:punct:]]*$##'`"
+    local branch="$(echo ${branch} | sed -e 's#[[:punct:]]*$##')"
 
     # The url is everything to the left of, and including the repo name itself.
     # Don't pick up any possibly superfluous @<blah> information, and filter
     # out any tildes.
-    #local url="`echo ${in} | sed -n "s#\(.*${repo}\).*#\1#p" | sed -e 's#@[[:alnum:]|@]*$##'`"
-    local url="`echo ${in} | sed -n "s#\(.*${repo}\).*#\1#p"`"
+    #local url="$(echo ${in} | sed -n "s#\(.*${repo}\).*#\1#p" | sed -e 's#@[[:alnum:]|@]*$##')"
+    local url="$(echo ${in} | sed -n "s#\(.*${repo}\).*#\1#p")"
 
     # Strip trailing @ symbols from the url.
-    local url="`echo ${url} | sed -e 's#@[[:alnum:]|@]*$##'`"
+    local url="$(echo ${url} | sed -e 's#@[[:alnum:]|@]*$##')"
 
     # Strip trailing trash from the url, except leave the http|git://
-    if test x"`echo ${url} | grep -e "^${service}://"`" != x; then
-	local url="`echo ${url} | sed -e "s#^${service}://##"`"
-	local url="`echo ${url} | sed -e 's#[[:punct:]]*$##'`"
+    if test x"$(echo ${url} | grep -e "^${service}://")" != x; then
+	local url="$(echo ${url} | sed -e "s#^${service}://##")"
+	local url="$(echo ${url} | sed -e 's#[[:punct:]]*$##')"
 	local url="${service}://${url}"
     else
 	# If http|git:// isn't the last thing on the line
 	#  just clean up the trailing trash.
-	local url="`echo ${url} | sed -e 's#[[:punct:]]*$##'`"
+	local url="$(echo ${url} | sed -e 's#[[:punct:]]*$##')"
     fi
 
     if test x"${repo}" != x; then
-	tool="`echo ${repo} | sed -e "s#\.git##"`"
+	tool="$(echo ${repo} | sed -e "s#\.git##")"
     fi
 
     local validats=0
     if test x"${revision}" != x; then
-        validats="`expr ${validats} + 1`"
+        validats="$(expr ${validats} + 1)"
     fi
     if test x"${user}" != x; then
-        validats="`expr ${validats} + 1`"
+        validats="$(expr ${validats} + 1)"
     fi
 
     local numats=0
     # This counts the number of fields separated by the @ symbols
-    numats=`echo ${in} | awk -F "@" '{ print NF }'`
+    numats=$(echo ${in} | awk -F "@" '{ print NF }')
     # Minus one is the number of @ symbols.   
-    numats="`expr ${numats} - 1`"
+    numats="$(expr ${numats} - 1)"
     if test ${numats} -gt ${validats}; then
-	superfluousats="`expr ${numats} - ${validats}`"
+	superfluousats="$(expr ${numats} - ${validats})"
 	error "Malformed input.  Found ${superfluousats} superfluous '@' symbols. NUMATS: ${numats}   VALIDATS: ${validats}"
 	err=1
     fi
@@ -374,7 +374,7 @@ get_git_service()
     local in=$1
     local out=
     local ret=
-    out="`git_parser service ${in}`"
+    out="$(git_parser service ${in})"
     ret=$?
     echo "${out}"
     if test ${ret} -ne 0; then
@@ -388,7 +388,7 @@ get_git_user()
     local in=$1
     local out=
     local ret=
-    out="`git_parser user ${in}`"
+    out="$(git_parser user ${in})"
     ret=$?
     echo "${out}"
     if test ${ret} -ne 0; then
@@ -402,7 +402,7 @@ get_git_url()
     local in=$1
     local out=
     local ret=
-    out="`git_parser url ${in}`"
+    out="$(git_parser url ${in})"
     ret=$?
     echo "${out}"
     if test ${ret} -ne 0; then
@@ -416,7 +416,7 @@ get_git_tool()
     local in=$1
     local out=
     local ret=
-    out="`git_parser tool ${in}`"
+    out="$(git_parser tool ${in})"
     ret=$?
     echo "${out}"
     if test ${ret} -ne 0; then
@@ -430,7 +430,7 @@ get_git_repo()
     local in=$1
     local out=
     local ret=
-    out="`git_parser repo ${in}`"
+    out="$(git_parser repo ${in})"
     ret=$?
     echo "${out}"
     if test ${ret} -ne 0; then
@@ -444,7 +444,7 @@ get_git_branch()
     local in=$1
     local out=
     local ret=
-    out="`git_parser branch ${in}`"
+    out="$(git_parser branch ${in})"
     ret=$?
     echo "${out}"
     if test ${ret} -ne 0; then
@@ -458,7 +458,7 @@ get_git_revision()
     local in=$1
     local out=
     local ret=
-    out="`git_parser revision ${in}`"
+    out="$(git_parser revision ${in})"
     ret=$?
     echo "${out}"
     if test ${ret} -ne 0; then
@@ -475,7 +475,7 @@ get_git_tag()
     local repo=
     local branch=
     local revision=
-    repo="`git_parser repo ${in}`"
+    repo="$(git_parser repo ${in})"
     ret=$?
     if test ${ret} -ne 0; then
 	error "Malformed input \"${in}\""
@@ -486,12 +486,12 @@ get_git_tag()
 	return ${ret}
     fi
 
-    branch="`get_git_branch ${in}`" || ( error "Malformed input \"${in}\""; return 1 )
+    branch="$(get_git_branch ${in})" || ( error "Malformed input \"${in}\""; return 1 )
 
     # Multi-path branches should have forward slashes replaced with dashes.
-    branch="`echo ${branch} | sed 's:/:-:g'`"
+    branch="$(echo ${branch} | sed 's:/:-:g')"
 
-    revision="`git_parser revision ${in}`" || ( error "Malformed input \"${in}\""; return 1 )
+    revision="$(git_parser revision ${in})" || ( error "Malformed input \"${in}\""; return 1 )
     echo "${repo}${branch:+~${branch}}${revision:+@${revision}}"
     return 0
 }

@@ -18,12 +18,12 @@
 
 bench_run ()
 {
-  local builddir="`get_builddir $1`"
+  local builddir="$(get_builddir $1)"
 
-  local tool="`get_toolname $1`"
+  local tool="$(get_toolname $1)"
   local runlog="${builddir}/run-${tool}.log"
-  local cmd="`grep ^benchcmd= ${topdir}/config/${tool}.conf | cut -d '\"' -f 2`"
-  local count="`grep ^benchcount= ${topdir}/config/${tool}.conf | cut -d '\"' -f 2`"
+  local cmd="$(grep ^benchcmd= ${topdir}/config/${tool}.conf | cut -d '\"' -f 2)"
+  local count="$(grep ^benchcount= ${topdir}/config/${tool}.conf | cut -d '\"' -f 2)"
 
   if test x"${cmd}" = x; then
     error "No benchcmd for ${tool}"
@@ -40,7 +40,7 @@ bench_run ()
     return 1
   fi
 
-  for i in `seq 1 "${count}"`; do
+  for i in $(seq 1 "${count}"); do
     dryrun "eval \"${cmd}\" 2>&1 | tee -a ${runlog}"
     if test $? -gt 0; then
       error "${cmd} failed"
@@ -64,7 +64,7 @@ bench_log ()
   local out_log="$2"
   local builddir="$3"
 
-  local in_log="`grep ^benchlog= ${topdir}/config/${tool}.conf | cut -d '\"' -f 2`"
+  local in_log="$(grep ^benchlog= ${topdir}/config/${tool}.conf | cut -d '\"' -f 2)"
   if test x"${in_log}" = x; then
     error "No benchlog in ${1}.conf"
     return 1
@@ -83,16 +83,16 @@ bench_log ()
 
 dump_host_info ()
 {
-  echo "GCCVERSION=`${CROSS_COMPILE}gcc --version | head -n1`"
-  echo "GXXVERSION=`${CROSS_COMPILE}g++ --version | head -n1`"
-  echo "DATE=`date +%Y-%m-%d`"
-  echo "ARCH=`uname -m`"
-  echo "CPU=`grep -E "^(model name|Processor)" /proc/cpuinfo | head -n1 | tr -s [:space:] | awk -F: '{print $2;}'`"
-  echo "OS=`lsb_release -sd`"
-  echo "TOPDIR=`pwd`"
-  echo "date:`date --rfc-3339=seconds -u`"
+  echo "GCCVERSION=$(${CROSS_COMPILE}gcc --version | head -n1)"
+  echo "GXXVERSION=$(${CROSS_COMPILE}g++ --version | head -n1)"
+  echo "DATE=$(date +%Y-%m-%d)"
+  echo "ARCH=$(uname -m)"
+  echo "CPU=$(grep -E "^(model name|Processor)" /proc/cpuinfo | head -n1 | tr -s [:space:] | awk -F: '{print $2;}')"
+  echo "OS=$(lsb_release -sd)"
+  echo "TOPDIR=$(pwd)"
+  echo "date:$(date --rfc-3339=seconds -u)"
   echo
-  echo "uname:`uname -a`"
+  echo "uname:$(uname -a)"
   echo
   echo lsb_release:
   lsb_release -a
@@ -100,9 +100,9 @@ dump_host_info ()
   echo /proc/version:
   cat /proc/version
   echo
-  echo "gcc: `dpkg -s gcc | grep ^Version`"
+  echo "gcc: $(dpkg -s gcc | grep ^Version)"
   gcc --version
-  echo "as: `dpkg -s binutils | grep ^Version`"
+  echo "as: $(dpkg -s binutils | grep ^Version)"
   as --version
   echo
   echo ldd:
@@ -128,6 +128,6 @@ dump_host_info ()
   echo $PATH
   echo
   echo cpufreq-info:
-  echo `cpufreq-info`
+  echo $(cpufreq-info)
   echo
  }

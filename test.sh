@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Improve debug logs
-PRGNAME=`basename $0`
+PRGNAME=$(basename $0)
 PS4='+ $PRGNAME: ${FUNCNAME+"$FUNCNAME : "}$LINENO: '
 
-testabe="`basename $0`"
-topdir=`dirname $0`
-abe_path=`readlink -f ${topdir}`
+testabe="$(basename $0)"
+topdir=$(dirname $0)
+abe_path=$(readlink -f ${topdir})
 export abe_path
 
 # Source common.sh for some common utilities.
@@ -14,7 +14,7 @@ export abe_path
 
 # We use a tmp/ directory for the builddir in order that we don't pollute the
 # srcdir or an existing builddir.
-tmpdir=`mktemp -d /tmp/abe.$$.XXX`
+tmpdir=$(mktemp -d /tmp/abe.$$.XXX)
 if test "$?" -gt 0; then
     error "mktemp of ${tmpdir} failed."
     exit 1
@@ -44,7 +44,7 @@ else
     # existing build is not moved or damaged.  This affects all called
     # instances of abe.sh below.
     export local_snapshots="${tmpdir}/snapshots"
-    out="`mkdir -p ${local_snapshots}`"
+    out="$(mkdir -p ${local_snapshots})"
     if test "$?" -gt 0; then
         error "couldn't create '${local_snapshots}' directory."
         exit 1
@@ -74,7 +74,7 @@ pass()
 	echo -n "($testlineno) " 1>&2
     fi
     echo "PASS: '$2'"
-    passes="`expr ${passes} + 1`"
+    passes="$(expr ${passes} + 1)"
 }
 
 failures=0
@@ -85,7 +85,7 @@ fail()
 	echo -n "($testlineno) " 1>&2
     fi
     echo "FAIL: '$2'"
-    failures="`expr ${failures} + 1`"
+    failures="$(expr ${failures} + 1)"
 }
 
 totals()
@@ -131,7 +131,7 @@ while test $# -gt 0; do
 	    debug="yes"
 	    ;;
 	--md5*|-md5*)
-	    if test `echo $1 | grep -c "\-md5.*="` -gt 0; then
+	    if test $(echo $1 | grep -c "\-md5.*=") -gt 0; then
 		error "A '=' is invalid after --md5sums. A space is expected."
 		exit 1;
 	    fi
@@ -603,8 +603,8 @@ test_pass "${cb_commands}" "${match}"
 # This one's a bit different because it doesn't work by putting the phrase to
 # be grepped in 'match'... yet.
 cb_commands="--dryrun --build gcc.git --stage 2"
-testlineno="`expr $LINENO + 1`"
-out="`(${runintmpdir:+cd ${tmpdir}} && ${abe_path}/abe.sh --space 4960 ${cb_commands} 2>&1 | tee ${testlogs}/${testlineno}.log | grep -c " build.*gcc.*stage2")`"
+testlineno="$(expr $LINENO + 1)"
+out="$(${runintmpdir:+cd ${tmpdir}} && ${abe_path}/abe.sh --space 4960 ${cb_commands} 2>&1 | tee ${testlogs}/${testlineno}.log | grep -c " build.*gcc.*stage2")"
 if test ${out} -gt 0; then
     pass ${testlineno} "VALID: --dryrun --build gcc.git --stage 2"
 else

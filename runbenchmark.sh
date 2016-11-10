@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # load the configure file produced by configure
-if test -e "`dirname $0`/host.conf"; then
-    . "`dirname $0`/host.conf"
+if test -e "$(dirname $0)/host.conf"; then
+    . "$(dirname $0)/host.conf"
 else
     echo "WARNING: no host.conf file!  Did you run configure?" 1>&2
 fi
 
 # load commonly used functions
-script="`which $0`"
-topdir="`dirname ${script}`"
-app="`basename $0`"
+script="$(which $0)"
+topdir="$(dirname ${script})"
+app="$(basename $0)"
 
 . "${topdir}/lib/common.sh" || exit 1
 . "${topdir}/lib/benchmark.sh" || exit 1
@@ -37,14 +37,14 @@ EOF
 setup_cpu()
 {
   sudo cpufreq-set -g performance
-  for p in `(ps ax --format='%p' | tail -n +2)`; do
+  for p in $(ps ax --format='%p' | tail -n +2); do
     sudo taskset -a -p 0x1 $p 2>&1;
   done
 }
 
 restore_cpu()
 {
-  for p in `(ps ax --format='%p' | tail -n +2)`; do
+  for p in $(ps ax --format='%p' | tail -n +2); do
     sudo taskset -a -p 0xFFFFFFFF $p 2>&1;
   done
   sudo cpufreq-set -g  conservative
@@ -239,7 +239,7 @@ for b in ${list//,/ };
 do
   if $extract; then
     echo "Extract benchmark $b"
-    url="`get_source $b`"
+    url="$(get_source $b)"
     if test $? -gt 0; then
       error "Couldn't find the source for ${do_checkout}"
       build_failure

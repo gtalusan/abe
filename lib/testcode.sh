@@ -8,7 +8,7 @@ testcode()
     fetch_http testcode/ChangeLog
 
     if test -f ${local_snapshots}/md5sums; then
-     	files="`grep testcode ${local_snapshots}/md5sums | cut -d ' ' -f3`"
+     	files="$(grep testcode ${local_snapshots}/md5sums | cut -d ' ' -f3)"
      	for i in ${files}; do
      	    build $i
 	    if test $? -gt 0; then

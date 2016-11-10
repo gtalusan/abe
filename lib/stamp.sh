@@ -28,21 +28,21 @@ get_stamp_name()
     local git_or_tar=$2
     local suffix=$3
 
-    local validstamp="`echo ${stamptype} | egrep -c "^configure$|^build$|^extract$|^fetch$"`" 
+    local validstamp="$(echo ${stamptype} | egrep -c "^configure$|^build$|^extract$|^fetch$")" 
     if test ${validstamp} -lt 1; then
 	error "Invalid stamp type selected."
 	return 1
     fi
 
     local name_fragment=
-    if test "`echo "${git_or_tar}" | grep -c "\.tar"`" -gt 0; then
+    if test "$(echo "${git_or_tar}" | grep -c "\.tar")" -gt 0; then
 	# Strip the .tar.* from the archive file to get the stamp name.
-	name_fragment="`echo "${git_or_tar}" | sed -e 's:\.tar.*::'`"
+	name_fragment="$(echo "${git_or_tar}" | sed -e 's:\.tar.*::')"
 	# Strip any preceding directory information,
 	# e.g., infrastructure/gmp-2.1.2.tar.xz -> gmp-2.1.2
-	name_fragment="`basename ${name_fragment}`"
+	name_fragment="$(basename ${name_fragment})"
     else
-	name_fragment="`get_git_tag ${git_or_tar}`" || return 1
+	name_fragment="$(get_git_tag ${git_or_tar})" || return 1
 	if test x"${name_fragment}" = x; then
 	    error "Couldn't determine stamp name."
 	    return 1
@@ -65,7 +65,7 @@ create_stamp()
     local ret=
 
     # Strip trailing slashes from the location directory.
-    stamp_loc="`echo ${stamp_loc} | sed 's#/*$##'`"
+    stamp_loc="$(echo ${stamp_loc} | sed 's#/*$##')"
 
     if test ! -d "${stamp_loc}"; then
 	notice "'${stamp_loc}' doesn't exist, creating it."
@@ -116,7 +116,7 @@ check_stamp()
     fi
 
     # Strip trailing slashes from the location directory.
-    stamp_loc="`echo ${stamp_loc} | sed 's#/*$##'`"
+    stamp_loc="$(echo ${stamp_loc} | sed 's#/*$##')"
 
     # stamp_type is only used for an informational message and we want to make
     # the resultant message grammatically correct.

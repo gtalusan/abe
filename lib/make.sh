@@ -51,7 +51,7 @@ build_all()
                     # If we don't install the sysroot, link to the one we built so
                     # we can use the GCC we just built.
 		    if test x"${dryrun}" != xyes; then
-			local sysroot="`${target}-gcc -print-sysroot`"
+			local sysroot="$(${target}-gcc -print-sysroot)"
 			if test ! -d ${sysroot}; then
 			    dryrun "ln -sfnT ${abe_top}/sysroots/${target} ${sysroot}"
 			fi
@@ -66,14 +66,14 @@ build_all()
 		# up, and then tries to redefine caddr_t yet again. We modify the installed
 		# types.h instead of the one in the source tree to be a tiny bit less ugly.
 		# After libgcc is built with the modified file, it needs to be changed back.
-		if test  `echo ${host} | grep -c mingw` -eq 1; then
+		if test  $(echo ${host} | grep -c mingw) -eq 1; then
 		    sed -i -e 's/typedef __caddr_t caddr_t/\/\/ FIXME: typedef __caddr_t caddr_t/' ${sysroots}/usr/include/sys/types.h
 		fi
 
                 build gcc stage2
                 build_all_ret=$?
 		# Reverse the ugly hack
-		if test `echo ${host} | grep -c mingw` -eq 1; then
+		if test $(echo ${host} | grep -c mingw) -eq 1; then
 		    sed -i -e 's/.*FIXME: //' ${sysroots}/usr/include/sys/types.h
 		fi
                 ;;
@@ -211,11 +211,11 @@ do_tarsrc()
     # this isn't as bad as it looks, because we will catch errors from
     # dryrun'd commands at the end of the build.
     notice "do_tarsrc has no error handling"
-    if test "`echo ${with_packages} | grep -c toolchain`" -gt 0; then
+    if test "$(echo ${with_packages} | grep -c toolchain)" -gt 0; then
 	release_binutils_src
 	release_gcc_src
     fi
-    if test "`echo ${with_packages} | grep -c gdb`" -gt 0; then
+    if test "$(echo ${with_packages} | grep -c gdb)" -gt 0; then
         release_gdb_src
     fi
 }
@@ -241,7 +241,7 @@ do_tarbin()
     binary_toolchain
     binary_sysroot
 
-#    if test "`echo ${with_packages} | grep -c gdb`" -gt 0; then
+#    if test "$(echo ${with_packages} | grep -c gdb)" -gt 0; then
 #	binary_gdb
 #    fi
     notice "Packaging took ${SECONDS} seconds"
@@ -253,14 +253,14 @@ build()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
+    local component="$(echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::')"
  
-    if test "`echo $2 | grep -c gdb`" -gt 0; then
+    if test "$(echo $2 | grep -c gdb)" -gt 0; then
 	local component="$2"
     fi
-    local url="`get_component_url ${component}`"
-    local srcdir="`get_component_srcdir ${component}`"
-    local builddir="`get_component_builddir ${component}`${2:+-$2}"
+    local url="$(get_component_url ${component})"
+    local srcdir="$(get_component_srcdir ${component})"
+    local builddir="$(get_component_builddir ${component})${2:+-$2}"
 
     if [ x"${srcdir}" = x"" ]; then
 	# Somehow this component hasn't been set up correctly.
@@ -268,12 +268,12 @@ build()
         return 1
     fi
 
-    local version="`basename ${srcdir}`"
+    local version="$(basename ${srcdir})"
     local stamp=
-    stamp="`get_stamp_name build ${version} ${2:+$2}`"
+    stamp="$(get_stamp_name build ${version} ${2:+$2})"
 
     # The stamp is in the buildir's parent directory.
-    local stampdir="`dirname ${builddir}`"
+    local stampdir="$(dirname ${builddir})"
 
     notice "Building ${component} ${2:+$2}"
 
@@ -345,7 +345,7 @@ build()
 	
 	create_stamp "${stampdir}" "${stamp}"
 	
-	local tag="`create_release_tag ${component}`"
+	local tag="$(create_release_tag ${component})"
 	notice "Done building ${tag}${2:+ $2}, took ${SECONDS} seconds"
 	
 	# For cross testing, we need to build a C library with our freshly built
@@ -359,7 +359,7 @@ make_all()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
+    local component="$(echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::')"
 
     # Linux isn't a build project, we only need the headers via the existing
     # Makefile, so there is nothing to compile.
@@ -367,19 +367,19 @@ make_all()
         return 0
     fi
 
-    local builddir="`get_component_builddir ${component}`${2:+-$2}"
+    local builddir="$(get_component_builddir ${component})${2:+-$2}"
     notice "Making all in ${builddir}"
 
-    if test x"${parallel}" = x"yes" -a "`echo ${component} | grep -c glibc`" -eq 0; then
+    if test x"${parallel}" = x"yes" -a "$(echo ${component} | grep -c glibc)" -eq 0; then
 	local make_flags="${make_flags} -j ${cpus}"
     fi
 
     # Enable an errata fix for aarch64 that effects the linker
-    if test "`echo ${component} | grep -c glibc`" -gt 0 -a `echo ${target} | grep -c aarch64` -gt 0; then
+    if test "$(echo ${component} | grep -c glibc)" -gt 0 -a $(echo ${target} | grep -c aarch64) -gt 0; then
 	local make_flags="${make_flags} LDFLAGS=\"-Wl,--fix-cortex-a53-843419\" "
     fi
 
-    if test "`echo ${target} | grep -c aarch64`" -gt 0; then
+    if test "$(echo ${target} | grep -c aarch64)" -gt 0; then
 	local make_flags="${make_flags} LDFLAGS_FOR_TARGET=\"-Wl,-fix-cortex-a53-843419\" "
     fi
 
@@ -403,7 +403,7 @@ make_all()
 
     # Some components require extra flags to make: we put them at the
     # end so that config files can override
-    local default_makeflags="`get_component_makeflags ${component}`"
+    local default_makeflags="$(get_component_makeflags ${component})"
 
 #    if test x"$2" = x"gdbserver"; then
 #       default_makeflags="CFLAGS=--sysroot=${sysroots}"
@@ -427,9 +427,9 @@ make_all()
     dryrun "make SHELL=${bash_shell} -w -C ${builddir} ${make_flags} 2>&1 | tee ${logfile}"
     local makeret=$?
     
-#    local errors="`dryrun \"egrep '[Ff]atal error:|configure: error:|Error' ${logfile}\"`"
+#    local errors="$(dryrun \"egrep '[Ff]atal error:|configure: error:|Error' ${logfile}\")"
 #    if test x"${errors}" != x -a ${makeret} -gt 0; then
-#       if test "`echo ${errors} | egrep -c "ignored"`" -eq 0; then
+#       if test "$(echo ${errors} | egrep -c "ignored")" -eq 0; then
 #           error "Couldn't build ${tool}: ${errors}"
 #           exit 1
 #       fi
@@ -438,7 +438,7 @@ make_all()
     # Make sure the make.log file is in place before grepping or the -gt
     # statement is ill formed.  There is not make.log in a dryrun.
 #    if test -e "${builddir}/make-${tool}.log"; then
-#       if test `grep -c "configure-target-libgcc.*ERROR" ${logfile}` -gt 0; then
+#       if test $(grep -c "configure-target-libgcc.*ERROR" ${logfile}) -gt 0; then
 #           error "libgcc wouldn't compile! Usually this means you don't have a sysroot installed!"
 #       fi
 #    fi
@@ -462,8 +462,8 @@ find_dynamic_linker()
     # Programmatically determine the embedded glibc version number for
     # this version of the clibrary.
     if test -x "${sysroots}/usr/bin/ldd"; then
-	c_library_version="`${sysroots}/usr/bin/ldd --version | head -n 1 | sed -e "s/.* //"`"
-	dynamic_linker="`find ${sysroots} -type f -name ld-${c_library_version}.so`"
+	c_library_version="$(${sysroots}/usr/bin/ldd --version | head -n 1 | sed -e "s/.* //")"
+	dynamic_linker="$(find ${sysroots} -type f -name ld-${c_library_version}.so)"
     fi
     if $strict && [ -z "$dynamic_linker" ]; then
         error "Couldn't find dynamic linker ld-${c_library_version}.so in ${sysroots}"
@@ -476,7 +476,7 @@ make_install()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
+    local component="$(echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::')"
 
     # Do not use -j for 'make install' because several build systems
     # suffer from race conditions. For instance in GCC, several
@@ -487,7 +487,7 @@ make_install()
     fi
 
     if test x"${component}" = x"linux"; then
-        local srcdir="`get_component_srcdir ${component}` ${2:+$2}"
+        local srcdir="$(get_component_srcdir ${component}) ${2:+$2}"
 	local ARCH=
 	case ${target} in
 	    *aarch64*)
@@ -518,10 +518,10 @@ make_install()
     fi
 
 
-    local builddir="`get_component_builddir ${component}`${2:+-$2}"
+    local builddir="$(get_component_builddir ${component})${2:+-$2}"
     notice "Making install in ${builddir}"
 
-    if test "`echo ${component} | grep -c glibc`" -gt 0; then
+    if test "$(echo ${component} | grep -c glibc)" -gt 0; then
         local make_flags=" install_root=${sysroots} ${make_flags} LDFLAGS=-static-libgcc"
     fi
 
@@ -549,8 +549,8 @@ make_install()
         export CONFIG_SHELL=${bash_shell}
     fi
 
-    local default_makeflags= #"`get_component_makeflags ${component}`"
-    local install_log="`dirname ${builddir}`/install-${component}${2:+-$2}.log"
+    local default_makeflags= #"$(get_component_makeflags ${component})"
+    local install_log="$(dirname ${builddir})/install-${component}${2:+-$2}.log"
     if test x"${component}" = x"gdb" ; then
 	if test x"$2" != x"gdbserver" ; then
             dryrun "make install-gdb ${make_flags} ${default_makeflags} -w -C ${builddir} 2>&1 | tee ${install_log}"
@@ -571,7 +571,7 @@ make_install()
     # the first cross-compiler.
     if test x"${component}" = x"gcc" \
 	-a x"$2" = "xstage2" \
-	-a "`echo ${host} | grep -c mingw`" -eq 0; then
+	-a "$(echo ${host} | grep -c mingw)" -eq 0; then
 	dryrun "copy_gcc_libs_to_sysroot \"${local_builds}/destdir/${host}/bin/${target}-gcc --sysroot=${sysroots}\""
 	if test $? != "0"; then
             error "Copy of gcc libs to sysroot failed!"
@@ -588,8 +588,8 @@ make_check()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
-    local builddir="`get_component_builddir ${component}`${2:+-$2}"
+    local component="$(echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::')"
+    local builddir="$(get_component_builddir ${component})${2:+-$2}"
 
     if [ x"${builddir}" = x"" ]; then
 	# Somehow this component hasn't been set up correctly.
@@ -618,7 +618,7 @@ make_check()
         local make_flags="${make_flags} LDFLAGS_FOR_BUILD=\"${override_ldflags}\""
     fi
 
-    local runtestflags="`get_component_runtestflags ${component}`"
+    local runtestflags="$(get_component_runtestflags ${component})"
     if test x"${runtestflags}" != x; then
         local make_flags="${make_flags} RUNTESTFLAGS=\"${runtestflags}\""
     fi
@@ -732,7 +732,7 @@ make_clean()
 {
 #    trace "$*"
 
-    builddir="`get_component_builddir $1 ${2:+$2}`"
+    builddir="$(get_component_builddir $1 ${2:+$2})"
     notice "Making clean in ${builddir}"
 
     if test x"$2" = "dist"; then
@@ -752,8 +752,8 @@ make_docs()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
-    local builddir="`get_component_builddir ${component}`${2:+-$2}"
+    local component="$(echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::')"
+    local builddir="$(get_component_builddir ${component})${2:+-$2}"
 
     notice "Making docs in ${builddir}"
 
@@ -870,7 +870,7 @@ copy_gcc_libs_to_sysroot()
 	error "${target}-gcc doesn't exist!"
 	return 1
     fi
-    libgcc="`${local_builds}/destdir/${host}/bin/${target}-gcc -print-file-name=${libgcc}`"
+    libgcc="$(${local_builds}/destdir/${host}/bin/${target}-gcc -print-file-name=${libgcc})"
     if test x"${libgcc}" = xlibgcc.so -o x"${libgcc}" = xlibgcc_s.so; then
 	error "GCC doesn't exist!"
 	return 1

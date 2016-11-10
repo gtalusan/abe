@@ -32,8 +32,8 @@ difftwodirs ()
     echo "Diffing: ${prev} against ${next}..."
     local resultsdir="${local_builds}/test-results"
 
-    local pversion="`echo ${prev} | grep -o "test-results/abe[0-9a-z]*" | grep -o "abe[0-9a-z]*"`"
-    local nversion="`echo ${next} | grep -o "test-results/abe[0-9a-z]*" | grep -o "abe[0-9a-z]*"`"
+    local pversion="$(echo ${prev} | grep -o "test-results/abe[0-9a-z]*" | grep -o "abe[0-9a-z]*")"
+    local nversion="$(echo ${next} | grep -o "test-results/abe[0-9a-z]*" | grep -o "abe[0-9a-z]*")"
 
     diffdir="${resultsdir}/diffof-${pversion}-${nversion}"
     mkdir -p ${diffdir}
@@ -47,25 +47,25 @@ difftwodirs ()
 		echo "	${prev}/$i.sum and" >> ${diffdir}/$i-test-results.txt
 		echo "	${next}/$i.sum" >> ${diffdir}/$i-test-results.txt
 	    fi
-	    if test `grep -c ^\+PASS ${diffdir}/diff-$i.txt` -gt 0; then
+	    if test $(grep -c ^\+PASS ${diffdir}/diff-$i.txt) -gt 0; then
 		echo "" >> ${diffdir}/$i-test-results.txt
 		echo "Tests that were failing that now PASS" >> ${diffdir}/$i-test-results.txt
 		echo "-------------------------------------" >> ${diffdir}/$i-test-results.txt
 		grep ^\+PASS ${diffdir}/diff-$i.txt >> ${diffdir}/$i-test-results.txt
 	    fi
-	    if test `grep -c ^\+FAIL ${diffdir}/diff-$i.txt` -gt 0; then
+	    if test $(grep -c ^\+FAIL ${diffdir}/diff-$i.txt) -gt 0; then
 		echo "" >> ${diffdir}/$i-test-results.txt
 		echo "Tests that were passing that now FAIL" >> ${diffdir}/$i-test-results.txt
 		echo "-------------------------------------" >> ${diffdir}/$i-test-results.txt
 		grep ^\+FAIL ${diffdir}/diff-$i.txt >> ${diffdir}/$i-test-results.txt
 	    fi
-	    if test `grep -c ^\+XPASS ${diffdir}/diff-$i.txt` -gt 0; then
+	    if test $(grep -c ^\+XPASS ${diffdir}/diff-$i.txt) -gt 0; then
 		echo "" >> ${diffdir}/$i-test-results.txt
 		echo "Tests that were expected failures that now PASS" >> ${diffdir}/$i-test-results.txt
 		echo "-----------------------------------------------" >> ${diffdir}/$i-test-results.txt
 		grep ^\+XPASS ${diffdir}/diff-$i.txt >> ${diffdir}/$i-test-results.txt
 	    fi
-	    if test `grep -c ^\+UN ${diffdir}/diff-$i.txt` -gt 0; then
+	    if test $(grep -c ^\+UN ${diffdir}/diff-$i.txt) -gt 0; then
 		echo "" >> ${diffdir}/$i-test-results.txt
 		echo "Tests that have problems" >> ${diffdir}/$i-test-results.txt
 		echo "------------------------" >> ${diffdir}/$i-test-results.txt
@@ -80,7 +80,7 @@ difftwodirs ()
     done
     
 #    rm -fr ${diffdir}
-    local incr=`expr ${incr} + 1`
+    local incr=$(expr ${incr} + 1)
 
     xz -f ${prev}/*.sum
     xz -f ${next}/*.sum
@@ -91,18 +91,18 @@ difftwodirs ()
 # Takes a list of directories and compares them one by one in sequence.
 diffall ()
 {
-    local count="`echo $1| wc -w`"
+    local count="$(echo $1| wc -w)"
     if test ${count} -gt 0; then
 	declare -a foo=($1)
 	local incr=0
 	while test ${incr} -lt ${count}; do
-	    local next=`expr ${incr} + 1`
+	    local next=$(expr ${incr} + 1)
 	    if test ${next} = ${count}; then
 		return 0
 	    fi
 
 	    difftwodirs ${foo[${incr}]} ${foo[${next}]}
-	    local incr=`expr ${incr} + 1`
+	    local incr=$(expr ${incr} + 1)
 	done
     fi
 }
@@ -119,10 +119,10 @@ diffall ()
 testfile()
 {
 
-    orig="`echo $1 | grep -o "[a-z]*-linaro[0-9\.\-]*"`"
-    next="`echo $2 | grep -o "[a-z]*-linaro[0-9\.\-]*"`"
-    origdir="`basename $1`"
-    nextdir="`basename $2`"
+    orig="$(echo $1 | grep -o "[a-z]*-linaro[0-9\.\-]*")"
+    next="$(echo $2 | grep -o "[a-z]*-linaro[0-9\.\-]*")"
+    origdir="$(basename $1)"
+    nextdir="$(basename $2)"
  
     cat <<EOF > ${diffdir}/testsuite-diff.txt
 Difference in testsuite results between:

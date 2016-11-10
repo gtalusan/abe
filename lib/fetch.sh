@@ -28,11 +28,11 @@ fetch()
     fi
 
     local component=$1
-    local getfile="`get_component_filespec ${component}`"
-    local url="`get_component_url ${component}`"
+    local getfile="$(get_component_filespec ${component})"
+    local url="$(get_component_url ${component})"
 
     # This provides the infrastructure/ directory if ${getfile} contains it.
-#    if test "`echo ${url} | grep -c infrastructure`" -gt 0; then
+#    if test "$(echo ${url} | grep -c infrastructure)" -gt 0; then
 #	local dir="/infrastructure"
 #    else
 	local dir=""
@@ -91,18 +91,18 @@ extract()
     local taropt=
     local component=$1
 
-    local url="`get_component_url ${component}`"
-#    if test "`echo ${url} | grep -c infrastructure`" -gt 0; then
+    local url="$(get_component_url ${component})"
+#    if test "$(echo ${url} | grep -c infrastructure)" -gt 0; then
 #	local dir="/infrastructure/"
 #    else
 	local dir=""
 #    fi
-    local file="`get_component_filespec ${component}`"
-    local srcdir="`get_component_srcdir ${component}`"
-    local version="`basename ${srcdir}`"
+    local file="$(get_component_filespec ${component})"
+    local srcdir="$(get_component_srcdir ${component})"
+    local version="$(basename ${srcdir})"
 
     local stamp=
-    stamp="`get_stamp_name extract ${version}`"
+    stamp="$(get_stamp_name extract ${version})"
 
     # Extract stamps go into srcdir
     local stampdir="${local_snapshots}${dir}"
@@ -111,18 +111,18 @@ extract()
     local tarball="${local_snapshots}${dir}/${file}"
 
     # Initialize component data structures
-    local builddir="`get_component_builddir ${component}`"
+    local builddir="$(get_component_builddir ${component})"
 
     # read the md5sum from the .asc file
     local md5sum_in_file
     if test x"${dryrun}" != xyes; then
-	if ! md5sum_in_file="`grep -o '^[0-9a-f]\{32\}\>' "${tarball}".asc`"; then
+	if ! md5sum_in_file="$(grep -o '^[0-9a-f]\{32\}\>' "${tarball}".asc)"; then
 	    error "Could not find checksum in ${tarball}.asc"
 	    return 1
 	fi
 
 	# check the md5sum from the manifest against the .asc file
-	local expected_md5sum="`get_component_md5sum ${component}`"
+	local expected_md5sum="$(get_component_md5sum ${component})"
 	if [ ! -z "${expected_md5sum}" ]; then
 	    if [ "${expected_md5sum}" != "${md5sum_in_file}" ]; then
 		error "Expected md5sum was ${expected_md5sum}, but found ${md5sum_in_file}"
@@ -166,17 +166,17 @@ extract()
 
     local taropts="${taropt}xf"
     notice "Extracting from ${tarball}."
-    dryrun "tar ${taropts} ${tarball} -C `dirname ${srcdir}`"
+    dryrun "tar ${taropts} ${tarball} -C $(dirname ${srcdir})"
 
     # FIXME: this is hopefully a temporary hack for tarballs where the
     # directory name versions doesn't match the tarball version. This means
     # it's missing the -linaro-VERSION.YYYY.MM part.
-    local name="`echo ${file} | sed -e 's:.tar\..*::'`"
+    local name="$(echo ${file} | sed -e 's:.tar\..*::')"
 
     # dryrun has to skip this step otherwise execution will always drop into
     # this leg.
     if test x"${dryrun}" != xyes -a ! -d ${srcdir}; then
-    	local dir2="`echo ${name} | sed -e 's:-linaro::' -e 's:-201[0-9\.\-]*::'`"
+    	local dir2="$(echo ${name} | sed -e 's:-linaro::' -e 's:-201[0-9\.\-]*::')"
     	if test ! -d ${srcdir}; then
     	    dir2="${srcdir}/${dir2}"
     	    warning "${tarball} didn't extract to ${srcdir} as expected!"
@@ -205,12 +205,12 @@ fetch_http()
 #    trace "$*"
 
     local component=$1
-    local getfile="`get_component_filespec ${component}`"
+    local getfile="$(get_component_filespec ${component})"
     if test x"${getfile}" = x; then
 	error "No filespec specified for ${component} !"
 	return 1
     fi
-    local url="`get_component_url ${component}`/${getfile}"
+    local url="$(get_component_url ${component})/${getfile}"
 
     if test x"${url}" = x; then
 	error "No URL specified for ${component} !"
@@ -218,7 +218,7 @@ fetch_http()
     fi
 
     # This provides the infrastructure/ directory if ${getfile} contains it.
-#    if test "`echo ${url} | grep -c infrastructure`" -gt 0; then
+#    if test "$(echo ${url} | grep -c infrastructure)" -gt 0; then
 #	local dir="/infrastructure"
 #    else
 	local dir=""
@@ -277,7 +277,7 @@ fetch_reference()
 #    trace "$*"
 
     local getfile=$1
-    local url="`get_component_url ${getfile}`"
+    local url="$(get_component_url ${getfile})"
 
     # Prevent error with empty variable-expansion.
     if test x"${getfile}" = x""; then
@@ -286,7 +286,7 @@ fetch_reference()
     fi
 
     # This provides the infrastructure/ directory if ${getfile} contains it.
-#    if test "`echo ${url} | grep -c infrastructure`" -gt 0; then
+#    if test "$(echo ${url} | grep -c infrastructure)" -gt 0; then
 #	local dir="/infrastructure/"
 #    else
 	local dir=""
@@ -324,12 +324,12 @@ check_md5sum()
 {
 #    trace "$*"
 
-    local tool="`basename $1`"
+    local tool="$(basename $1)"
 
-    local file="`get_component_filespec ${tool}`.asc"
-    local url="`get_component_url ${tool}`"
+    local file="$(get_component_filespec ${tool}).asc"
+    local url="$(get_component_url ${tool})"
 
-#    if test "`echo ${url} | grep -c infrastructure`" -gt 0; then
+#    if test "$(echo ${url} | grep -c infrastructure)" -gt 0; then
 #	local dir="/infrastructure/"
 #    else
 	local dir=""

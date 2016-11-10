@@ -34,11 +34,11 @@ sanitize()
 #    trace "$*"
 
     # the files left from random file editors we don't want.
-    local edits="`find $1/ -name \*~ -o -name \.\#\* -o -name \*.bak -o -name x`"
+    local edits="$(find $1/ -name \*~ -o -name \.\#\* -o -name \*.bak -o -name x)"
 
     pushd ./ >/dev/null
     cd $1
-    if test "`git status | grep -c "nothing to commit, working directory clean"`" -gt 0; then
+    if test "$(git status | grep -c "nothing to commit, working directory clean")" -gt 0; then
 	error "uncommited files in $1! Commit files before releasing."
 	#return 1
     fi
@@ -57,7 +57,7 @@ binary_runtime()
 {
 #    trace "$*"
 
-    local rtag="`create_release_tag gcc`"
+    local rtag="$(create_release_tag gcc)"
     local tag="runtime-${rtag}-${target}"
 
     local destdir="${local_builds}/tmp.$$/${tag}"
@@ -89,9 +89,9 @@ binary_gdb()
 {
 #    trace "$*"
 
-    local version="`${target}-gdb --version | head -1 | grep -o " [0-9\.][0-9].*\." | tr -d ')'`"
-    local tag="`create_release_tag ${gdb_version} | sed -e 's:binutils-::'`"
-    local builddir="`get_component_builddir gdb`-gdb"
+    local version="$(${target}-gdb --version | head -1 | grep -o " [0-9\.][0-9].*\." | tr -d ')')"
+    local tag="$(create_release_tag ${gdb_version} | sed -e 's:binutils-::')"
+    local builddir="$(get_component_builddir gdb)-gdb"
     local destdir="${local_builds}/tmp.$$/${tag}-tmp"
     local prefix="${local_builds}/destdir/${host}"
 
@@ -104,7 +104,7 @@ binary_gdb()
     dryrun "make install ${make_flags} DESTDIR=${destdir} -w -C ${builddir}/gdb/gdbserver"
     dryrun "ln -sfnT ${destdir}/${prefix} /${local_builds}/tmp.$$/${tag}"
 
-    local abbrev="`echo ${host}_${target} | sed -e 's:none-::' -e 's:unknown-::'`"
+    local abbrev="$(echo ${host}_${target} | sed -e 's:none-::' -e 's:unknown-::')"
  
    # make the tarball from the tree we just created.
     notice "Making binary tarball for GDB, please wait..."
@@ -118,13 +118,13 @@ binary_gdb()
 
 # Produce a binary toolchain tarball
 # For daily builds produced by Jenkins, we use
-# `date +%Y%m%d`-${BUILD_NUMBER}-${GIT_REVISION}
+# $(date +%Y%m%d)-${BUILD_NUMBER}-${GIT_REVISION}
 # e.g artifact_20130906-12-245f0869.tar.xz
 binary_toolchain()
 {
 #    trace "$*"
 
-    local rtag="`create_release_tag gcc`"
+    local rtag="$(create_release_tag gcc)"
 
     if test x"${host}" != x"${build}"; then
 	local tag="${rtag}-i686-mingw32_${target}"
@@ -139,7 +139,7 @@ binary_toolchain()
     # libwinpthread-1.dll, so a copy is put in bin so executables will
     # work.
     # Another copy is needed in gcc's libexec for cc1.exe to work
-    if test "`echo ${host} | grep -c mingw`" -gt 0; then
+    if test "$(echo ${host} | grep -c mingw)" -gt 0; then
 	for dest in ${local_builds}/destdir/${host}/bin/ ${local_builds}/destdir/${host}/libexec/gcc/${target}/*/
 	do
 	    dryrun "cp /usr/${host}/lib/libwinpthread-1.dll ${dest}"
@@ -177,7 +177,7 @@ binary_sysroot()
 {
 #    trace "$*"
 
-    local rtag="`create_release_tag ${clibrary}`"
+    local rtag="$(create_release_tag ${clibrary})"
     local tag="sysroot-${rtag}-${target}"
 
     local destdir="${local_builds}/tmp.$$/${tag}"
@@ -210,9 +210,9 @@ manifest()
     fi
 
     if test x"$1" = x; then
-	mtag="`create_release_tag gcc`"
+	mtag="$(create_release_tag gcc)"
 	mkdir -p ${local_builds}/${host}/${target}
-	if test `echo ${host} | grep -c mingw` -eq 1; then
+	if test $(echo ${host} | grep -c mingw) -eq 1; then
 	    local build="win32"
 	else
 	    local build="linux"
@@ -235,11 +235,11 @@ manifest()
 	local component="$i"
 	# ABE build data goes in the documentation sxection
 	if test x"${component}" = x"abe"; then
-	    echo "${component}_url=`get_component_url ${component}`" > ${tmpfile}
-	    echo "${component}_branch=branch=`get_component_branch ${component}`" >> ${tmpfile}
-	    echo "${component}_revision=`get_component_revision ${component}`" >> ${tmpfile}
-	    echo "${component}_filespec=`get_component_filespec ${component}`" >> ${tmpfile}
-	    local configure="`get_component_configure ${component} | sed -e "s:${local_builds}:\$\{local_builds\}:g" -e "s:${sysroots}:\$\{sysroots\}:g" -e "s:${local_snapshots}:\$\{local_snapshots\}:g" -e "s:${host}:\$\{host\}:g"`"
+	    echo "${component}_url=$(get_component_url ${component})" > ${tmpfile}
+	    echo "${component}_branch=branch=$(get_component_branch ${component})" >> ${tmpfile}
+	    echo "${component}_revision=$(get_component_revision ${component})" >> ${tmpfile}
+	    echo "${component}_filespec=$(get_component_filespec ${component})" >> ${tmpfile}
+	    local configure="$(get_component_configure ${component} | sed -e "s:${local_builds}:\$\{local_builds\}:g" -e "s:${sysroots}:\$\{sysroots\}:g" -e "s:${local_snapshots}:\$\{local_snapshots\}:g" -e "s:${host}:\$\{host\}:g")"
 	    echo "${component}_configure=\"${configure}\"" >> ${tmpfile}
 	    echo "" >> ${tmpfile}
 	    continue
@@ -255,30 +255,30 @@ manifest()
 
 	echo "# Component data for ${component}" >> ${outfile}
 
-	local url="`get_component_url ${component}`"
+	local url="$(get_component_url ${component})"
 	echo "${component}_url=${url}" >> ${outfile}
 
-	local branch="`get_component_branch ${component}`"
+	local branch="$(get_component_branch ${component})"
 	if test x"${branch}" != x; then
 	    echo "${component}_branch=${branch}" >> ${outfile}
 	fi
 
-	local revision="`get_component_revision ${component}`"
+	local revision="$(get_component_revision ${component})"
 	if test x"${revision}" != x; then
 	    echo "${component}_revision=${revision}" >> ${outfile}
 	fi
 
-	local filespec="`get_component_filespec ${component}`"
+	local filespec="$(get_component_filespec ${component})"
 	if test x"${filespec}" != x; then
 	    echo "${component}_filespec=${filespec}" >> ${outfile}
 	fi
 
-	local makeflags="`get_component_makeflags ${component} | sed -e "s:${local_builds}:\$\{local_builds\}:g" -e "s:${sysroots}:\$\{sysroots\}:g" -e "s:${local_snapshots}:\$\{local_snapshots\}:g" -e "s:${host}:\$\{host\}:g"`"
+	local makeflags="$(get_component_makeflags ${component} | sed -e "s:${local_builds}:\$\{local_builds\}:g" -e "s:${sysroots}:\$\{sysroots\}:g" -e "s:${local_snapshots}:\$\{local_snapshots\}:g" -e "s:${host}:\$\{host\}:g")"
 	if test x"${makeflags}" != x; then
 	    echo "${component}_makeflags=\"${makeflags}\"" >> ${outfile}
 	fi
 
-	local md5sum="`get_component_md5sum ${component}`"
+	local md5sum="$(get_component_md5sum ${component})"
 	if test x"${md5sum}" != x; then
 	    echo "${component}_md5sum=${md5sum}" >> ${outfile}
 	fi
@@ -287,21 +287,21 @@ manifest()
 	if test x"${component}" = x"gcc"; then
 	    echo "${component}_configure=" >> ${outfile}
 	else
-	    local configure="`get_component_configure ${component} | sed -e "s:${local_builds}:\$\{local_builds\}:g" -e "s:${sysroots}:\$\{sysroots\}:g" -e "s:${local_snapshots}:\$\{local_snapshots\}:g" -e "s:${host}:\$\{host\}:g"`"
+	    local configure="$(get_component_configure ${component} | sed -e "s:${local_builds}:\$\{local_builds\}:g" -e "s:${sysroots}:\$\{sysroots\}:g" -e "s:${local_snapshots}:\$\{local_snapshots\}:g" -e "s:${host}:\$\{host\}:g")"
 	    if test x"${configure}" != x; then
 		echo "${component}_configure=\"${configure}\"" >> ${outfile}
 	    fi
 	fi
 
-	local static="`get_component_staticlink ${component}`"
-	if test "`echo ${component} | grep -c glibc`" -eq 0; then
+	local static="$(get_component_staticlink ${component})"
+	if test "$(echo ${component} | grep -c glibc)" -eq 0; then
 	    echo "${component}_staticlink=\"${static}\"" >> ${outfile}
 	fi
 
 	if test x"${component}" = x"gcc"; then
-	    local stage1="`get_component_configure gcc stage1 | sed -e "s:${local_builds}:\$\{local_builds\}:g" -e "s:${sysroots}:\$\{sysroots\}:g" -e "s:${local_snapshots}:\$\{local_snapshots\}:g" -e "s:${host}:\$\{host\}:g"`"
+	    local stage1="$(get_component_configure gcc stage1 | sed -e "s:${local_builds}:\$\{local_builds\}:g" -e "s:${sysroots}:\$\{sysroots\}:g" -e "s:${local_snapshots}:\$\{local_snapshots\}:g" -e "s:${host}:\$\{host\}:g")"
 	    echo "gcc_stage1_flags=\"${stage1}\"" >> ${outfile}
-	    local stage2="`get_component_configure gcc stage2 | sed -e "s:${local_builds}:\$\{local_builds\}:g" -e "s:${sysroots}:\$\{sysroots\}:g" -e "s:${local_snapshots}:\$\{local_snapshots\}:g" -e "s:${host}:\$\{host\}:g"`"
+	    local stage2="$(get_component_configure gcc stage2 | sed -e "s:${local_builds}:\$\{local_builds\}:g" -e "s:${sysroots}:\$\{sysroots\}:g" -e "s:${local_snapshots}:\$\{local_snapshots\}:g" -e "s:${host}:\$\{host\}:g")"
 	    echo "gcc_stage2_flags=\"${stage2}\"" >> ${outfile}
 	fi
 
@@ -340,9 +340,9 @@ EOF
     fi
 
     for i in gcc binutils ${clibrary} abe; do
-	if test "`component_is_tar ${i}`" = no; then
+	if test "$(component_is_tar ${i})" = no; then
 	    echo "--------------------- $i ----------------------" >> ${outfile}
-	    local srcdir="`get_component_srcdir $i`"
+	    local srcdir="$(get_component_srcdir $i)"
 	    # Invoke in a subshell in order to prevent state-change of the current
 	    # working directory after manifest is called.
 	    git -C ${srcdir} log -n 1 >> ${outfile}
@@ -369,16 +369,16 @@ binutils_src_tarball()
 {
 #    trace "$*"
 
-    local version="`${target}-ld --version | head -1 | cut -d ' ' -f 5 | cut -d '.' -f 1-3`"
+    local version="$(${target}-ld --version | head -1 | cut -d ' ' -f 5 | cut -d '.' -f 1-3)"
 
     # See if specific component versions were specified at runtime
     if test x"${binutils_version}" = x; then
-	local binutils_version="binutils-`grep ^latest= ${topdir}/config/binutils.conf | cut -d '\"' -f 2`"
+	local binutils_version="binutils-$(grep ^latest= ${topdir}/config/binutils.conf | cut -d '\"' -f 2)"
     fi
 
-    local srcdir="`get_component_srcdir ${binutils_version}`"
-    local builddir="`get_component_builddir ${binutils_version} binutils`"
-    local branch="`echo ${binutils_version} | cut -d '/' -f 2`"
+    local srcdir="$(get_component_srcdir ${binutils_version})"
+    local builddir="$(get_component_builddir ${binutils_version} binutils)"
+    local branch="$(echo ${binutils_version} | cut -d '/' -f 2)"
 
     # clean up files that don't go into a release, often left over from development
     if test -d ${srcdir}; then
@@ -387,29 +387,29 @@ binutils_src_tarball()
 
     # from /linaro/snapshots/binutils.git/src-release: do-proto-toplev target
     # Take out texinfo from a few places.
-    local dirs="`find ${srcdir} -name Makefile.in`"
+    local dirs="$(find ${srcdir} -name Makefile.in)"
     for d in ${dirs}; do
 	sed -i -e '/^all\.normal: /s/\all-texinfo //' -e '/^install-texinfo /d' $d
     done
 
     # Create .gmo files from .po files.
-    for f in `find . -name '*.po' -type f -print`; do
-        dryrun "msgfmt -o `echo $f | sed -e 's/\.po$/.gmo/'` $f"
+    for f in $(find . -name '*.po' -type f -print); do
+        dryrun "msgfmt -o $(echo $f | sed -e 's/\.po$/.gmo/') $f"
     done
  
     if test x"${release}" != x; then
-	local date="`date +%Y%m%d`"
-	if test "`echo $1 | grep -c '@'`" -gt 0; then
-	    local revision="`echo $1 | cut -d '@' -f 2`"
+	local date="$(date +%Y%m%d)"
+	if test "$(echo $1 | grep -c '@')" -gt 0; then
+	    local revision="$(echo $1 | cut -d '@' -f 2)"
 	fi
 	if test -d ${srcdir}/.git; then
 	    local binutils_version="${dir}-${date}"
-	    local revision="-`git -C ${srcdir} log --oneline | head -1 | cut -d ' ' -f 1`"
+	    local revision="-$(git -C ${srcdir} log --oneline | head -1 | cut -d ' ' -f 1)"
 	    local exclude="--exclude .git"
 	else
-	    local binutils_version="`echo ${binutils_version} | sed -e "s:-2.*:-${date}:"`"
+	    local binutils_version="$(echo ${binutils_version} | sed -e "s:-2.*:-${date}:")"
 	fi
-	local date="`date +%Y%m%d`"
+	local date="$(date +%Y%m%d)"
 	local tag="${binutils_version}-linaro${revision}-${date}"
     else
 	local tag="binutils-linaro-${version}-${release}"

@@ -24,9 +24,9 @@ build="${build}"
 host="${host:-${build}}"
 target="${host}"
 
-date="`date "+%Y.%m.%d"`"
-gcc="`which gcc`"
-host_gcc_version="`${gcc} -v 2>&1 | tail -1`"
+date="$(date "+%Y.%m.%d")"
+gcc="$(which gcc)"
+host_gcc_version="$(${gcc} -v 2>&1 | tail -1)"
 binutils="default"
 # This is the default clibrary and can be overridden on the command line.
 clibrary="auto"
@@ -130,16 +130,16 @@ import_manifest()
 
     manifest=$1
     if test -f ${manifest} ; then
-	local components="`grep "^# Component data for " ${manifest} | cut -d ' ' -f 5`"
+	local components="$(grep "^# Component data for " ${manifest} | cut -d ' ' -f 5)"
 
-	clibrary="`grep "^clibrary=" ${manifest} | cut -d '=' -f 2`"
-	local ltarget="`grep ^target= ${manifest}  | cut -d '=' -f 2`"
+	clibrary="$(grep "^clibrary=" ${manifest} | cut -d '=' -f 2)"
+	local ltarget="$(grep ^target= ${manifest}  | cut -d '=' -f 2)"
 	if test x"${ltarget}" != x; then
 	    target=${ltarget}
 	fi
 	sysroots=${sysroots}/${target}
 
-	local manifest_format="`grep "^manifest_format" ${manifest} | cut -d '=' -f 2`"
+	local manifest_format="$(grep "^manifest_format" ${manifest} | cut -d '=' -f 2)"
 	case "${manifest_format}" in
 	    1.1) ;; # no md5sums, but no special handling required
 	    1.2) ;;
@@ -151,23 +151,23 @@ import_manifest()
 	local variables=
 	local i=0
 	for i in ${components}; do
-	    local md5sum="`grep "^${i}_md5sum" ${manifest} | cut -d '=' -f 2`"
-	    local url="`grep "^${i}_url" ${manifest} | cut -d '=' -f 2`"
-	    local branch="`grep "^${i}_branch" ${manifest} | cut -d '=' -f 2`"
-	    local filespec="`grep "^${i}_filespec" ${manifest} | cut -d '=' -f 2`"
-	    local static="`grep "^${i}_staticlink" ${manifest} | cut -d '=' -f 2`"
+	    local md5sum="$(grep "^${i}_md5sum" ${manifest} | cut -d '=' -f 2)"
+	    local url="$(grep "^${i}_url" ${manifest} | cut -d '=' -f 2)"
+	    local branch="$(grep "^${i}_branch" ${manifest} | cut -d '=' -f 2)"
+	    local filespec="$(grep "^${i}_filespec" ${manifest} | cut -d '=' -f 2)"
+	    local static="$(grep "^${i}_staticlink" ${manifest} | cut -d '=' -f 2)"
 	    # Any embedded spaces in the value have to be converted to a '%'
 	    # character. for component_init().
-	    local makeflags="`grep "^${i}_makeflags" ${manifest} | cut -d '=' -f 2-20 | tr ' ' '%'`"
+	    local makeflags="$(grep "^${i}_makeflags" ${manifest} | cut -d '=' -f 2-20 | tr ' ' '%')"
 	    eval "makeflags=${makeflags}"
-	    local configure="`grep "^${i}_configure" ${manifest} | cut -d '=' -f 2-20 | tr ' ' '%'| tr -d '\"'`"
+	    local configure="$(grep "^${i}_configure" ${manifest} | cut -d '=' -f 2-20 | tr ' ' '%'| tr -d '\"')"
 	    eval "configure=${configure}"
-	    local revision="`grep "^${i}_revision" ${manifest} | cut -d '=' -f 2`"
-	    if test "`echo ${filespec} | grep -c \.tar\.`" -gt 0; then
-		local version="`echo ${filespec} | sed -e 's:\.tar\..*$::'`"
+	    local revision="$(grep "^${i}_revision" ${manifest} | cut -d '=' -f 2)"
+	    if test "$(echo ${filespec} | grep -c \.tar\.)" -gt 0; then
+		local version="$(echo ${filespec} | sed -e 's:\.tar\..*$::')"
 		local dir=${version}
 	    else
-		local fixbranch="`echo ${branch} | tr '/@' '_'`"
+		local fixbranch="$(echo ${branch} | tr '/@' '_')"
 		local dir=${filespec}~${fixbranch}${revision:+_rev_${revision}}
 	    fi
 	    local srcdir="${local_snapshots}/${dir}"
@@ -181,13 +181,13 @@ import_manifest()
 		    # Glibc builds will fail if there is an @ in the path. This is
 		    # unfortunately, as @ is used to deliminate the revision string.
 		    local srcdir="${local_snapshots}/${dir}"
-		    local builddir="`echo ${local_builds}/${host}/${target}/${dir} | tr '@' '_'`"
+		    local builddir="$(echo ${local_builds}/${host}/${target}/${dir} | tr '@' '_')"
 		    ;;
 		gcc)
 		    local configure=
-		    local stage1_flags="`grep ^gcc_stage1_flags= ${manifest} | cut -d '=' -f 2-20 | tr ' ' '%' | tr -d '\"'`"
+		    local stage1_flags="$(grep ^gcc_stage1_flags= ${manifest} | cut -d '=' -f 2-20 | tr ' ' '%' | tr -d '\"')"
 		    eval "stage1_flags=${stage1_flags}"
-		    local stage2_flags="`grep ^gcc_stage2_flags= ${manifest} | cut -d '=' -f 2-20 | tr ' ' '%' | tr -d '\"'`"
+		    local stage2_flags="$(grep ^gcc_stage2_flags= ${manifest} | cut -d '=' -f 2-20 | tr ' ' '%' | tr -d '\"')"
 		    eval "stage2_flags=${stage2_flags}"
 		    ;;
 		*)
@@ -228,24 +228,24 @@ get_component_list()
 {
     # read dependencies from infrastructure.conf
     # TODO: support --extraconfigdir for infrastructure.conf
-    local builds="`grep ^depends ${topdir}/config/infrastructure.conf | tr -d '"' | sed -e 's:^depends=::'`"
+    local builds="$(grep ^depends ${topdir}/config/infrastructure.conf | tr -d '"' | sed -e 's:^depends=::')"
 
     if test x"${target}" != x"${build}"; then
         # Build a cross compiler
-	if test "`echo ${host} | grep -c mingw`" -gt 0; then
+	if test "$(echo ${host} | grep -c mingw)" -gt 0; then
 	    # As Mingw32 requires a cross compiler to be already built, so we
 	    # don't need to rebuild the sysroot.
             builds="${builds} expat python binutils libc stage2 gdb"
 	else
             builds="${builds} binutils stage1 libc stage2 gdb"
 	fi
-	if test "`echo ${target} | grep -c -- -linux-`" -eq 1; then
+	if test "$(echo ${target} | grep -c -- -linux-)" -eq 1; then
 	    builds="${builds} gdbserver"
 	else
 	    # "linux" is included in the depends line in infrastructure.conf,
 	    # but is only needed for linux targets. Therefore remove it for
 	    # all other targets.
-	    builds="`echo ${builds} | sed -e 's: linux::'`"
+	    builds="$(echo ${builds} | sed -e 's: linux::')"
 	fi
     else
         builds="${builds} binutils stage2 libc gdb" # native build

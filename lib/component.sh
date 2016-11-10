@@ -49,9 +49,9 @@ component_init ()
 
     local index=
     for index in $*; do
-	if test "`echo ${index} | grep -c '='`" -gt 0; then
-	    name="`echo ${index} | cut -d '=' -f 1`"
-	    value="`echo ${index} | cut -d '=' -f2-20 | sed -e 's:^[a-zA-Z]*=::' | tr '%' ' '`"
+	if test "$(echo ${index} | grep -c '=')" -gt 0; then
+	    name="$(echo ${index} | cut -d '=' -f 1)"
+	    value="$(echo ${index} | cut -d '=' -f2-20 | sed -e 's:^[a-zA-Z]*=::' | tr '%' ' ')"
 	    eval "local ifset=\${${component}[${name}]:-notset}"
 	    if test x"${ifset}" = x"notset"; then
 		# $value is supposed to be safe for bare shell expansion
@@ -62,7 +62,7 @@ component_init ()
 		fi
 	    fi
 	else
-	    component="`echo ${index} | sed -e 's:-[0-9a-z\.\-]*::'`"
+	    component="$(echo ${index} | sed -e 's:-[0-9a-z\.\-]*::')"
 	    declare -Ag ${component}
 	    eval ${component}[TOOL]="${component}"
 	    if test $? -gt 0; then
@@ -90,7 +90,7 @@ set_component_url ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     declare -p ${component} 2>&1 > /dev/null
     if test $? -gt 0; then
 	warning "${component} does not exist!"
@@ -106,7 +106,7 @@ set_component_revision ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     declare -p ${component} 2>&1 > /dev/null
     if test $? -gt 0; then
 	warning "${component} does not exist!"
@@ -122,7 +122,7 @@ set_component_srcdir ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     declare -p ${component} 2>&1 > /dev/null
     if test $? -gt 0; then
 	warning "${component} does not exist!"
@@ -138,7 +138,7 @@ set_component_builddir ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     declare -p ${component} 2>&1 > /dev/null
     if test $? -gt 0; then
 	warning "${component} does not exist!"
@@ -154,7 +154,7 @@ set_component_filespec ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     declare -p ${component} 2>&1 > /dev/null
     if test $? -gt 0; then
 	warning "${component} does not exist!"
@@ -170,7 +170,7 @@ set_component_branch ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     declare -p ${component} 2>&1 > /dev/null
     if test $? -gt 0; then
 	warning "${component} does not exist!"
@@ -186,7 +186,7 @@ set_component_makeflags ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     declare -p ${component} 2>&1 > /dev/null
     if test $? -gt 0; then
 	warning "${component} does not exist!"
@@ -202,7 +202,7 @@ set_component_configure ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     declare -p ${component} 2>&1 > /dev/null
     if test $? -gt 0; then
 	warning "${component} does not exist!"
@@ -218,7 +218,7 @@ set_component_md5sum ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     declare -p ${component} 2>&1 > /dev/null
     if test $? -gt 0; then
        warning "${component} does not exist!"
@@ -254,7 +254,7 @@ get_component_url ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
@@ -269,7 +269,7 @@ get_component_revision ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
@@ -284,7 +284,7 @@ get_component_srcdir ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
@@ -299,7 +299,7 @@ get_component_builddir ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
@@ -314,7 +314,7 @@ get_component_filespec ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
@@ -329,7 +329,7 @@ get_component_branch ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
@@ -344,7 +344,7 @@ get_component_makeflags ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
@@ -360,12 +360,12 @@ get_component_configure ()
 #    trace "$*"
 
     local sopts=""
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
 
     # Only GCC has parameters for two stages.
     if test x"${component}" = x"gcc"; then
 	if test x"$2" != x; then
-	    local stage="`echo $2 | tr "[:lower:]" "[:upper:]"`"
+	    local stage="$(echo $2 | tr "[:lower:]" "[:upper:]")"
 	    local sopts="${gcc[${stage}]}"
 	fi
     fi
@@ -384,7 +384,7 @@ get_component_md5sum ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
        warning "${component} does not exist!"
        return 1
@@ -399,7 +399,7 @@ get_component_staticlink ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
@@ -414,7 +414,7 @@ get_component_runtestflags ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
@@ -430,7 +430,7 @@ get_component_stage ()
 {
 #    trace "$*"
 
-    local stage="`echo $1 | tr "[:lower:]" "[:upper:]"`"
+    local stage="$(echo $1 | tr "[:lower:]" "[:upper:]")"
     local component="gcc"
 
     if test "${component:+set}" != "set"; then
@@ -449,12 +449,12 @@ component_is_tar ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
     else
-	if test "`get_component_filespec ${component} | grep -c \.tar\.`" -gt 0; then
+	if test "$(get_component_filespec ${component} | grep -c \.tar\.)" -gt 0; then
 	    echo "yes"
 	    return 0
 	else
@@ -468,12 +468,12 @@ get_component_subdir ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
     else
-	if test "`get_component_filespec ${component} | grep -c \.tar\.`" -gt 0; then
+	if test "$(get_component_filespec ${component} | grep -c \.tar\.)" -gt 0; then
 	    echo "yes"
 	    return 0
 	fi
@@ -486,16 +486,16 @@ component_dump()
 {
 #    trace "$*"
 
-    local flag="`set -o | grep xtrace| tr -s ' ' | tr -d '\t' | cut -d ' ' -f 2`"
+    local flag="$(set -o | grep xtrace| tr -s ' ' | tr -d '\t' | cut -d ' ' -f 2)"
     set +x
 
-    local component="`echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::'`"
+    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
     if test "${component:+set}" != "set"; then
 	warning "${component} does not exist!"
 	return 1
     fi
 
-    local data="`declare -p ${component} | sed -e 's:^.*(::' -e 's:).*$::'`"
+    local data="$(declare -p ${component} | sed -e 's:^.*(::' -e 's:).*$::')"
 
     echo "Data dump of component \"${component}\""
     for i in ${data}; do
@@ -513,7 +513,7 @@ collect_data ()
 {
 #    trace "$*"
 
-    local component="`echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::'`"
+    local component="$(echo $1 | sed -e 's:\.git.*::' -e 's:-[0-9a-z\.\-]*::')"
 
     if test x"${manifest}" != x; then
 	notice "Reading data from Manifest file."
@@ -523,18 +523,18 @@ collect_data ()
     # ABE's data is extracted differently than the rest.
     if test x"${component}" = x"abe"; then
 	pushd ${abe_path}
-	local revision="`git log --format=format:%H -n 1`"
-	local abbrev="`git log --format=format:%h -n 1`"
-	local branch="`git branch | grep "^\*" | cut -d ' ' -f 2`"
-	if test "`echo ${branch} | egrep -c "detached|^\(no"`" -gt -0; then
+	local revision="$(git log --format=format:%H -n 1)"
+	local abbrev="$(git log --format=format:%h -n 1)"
+	local branch="$(git branch | grep "^\*" | cut -d ' ' -f 2)"
+	if test "$(echo ${branch} | egrep -c "detached|^\(no")" -gt -0; then
 	    local branch=
 	fi
-	local url="`git config --get remote.origin.url`"
-	local url="`dirname ${url}`"
-	local date="`git log -n 1 --format=%aD | tr ' ' '%'`"
+	local url="$(git config --get remote.origin.url)"
+	local url="$(dirname ${url})"
+	local date="$(git log -n 1 --format=%aD | tr ' ' '%')"
 	local filespec="abe.git"
 	local srcdir="${abe_path}"
-	local configure=\""`grep ${srcdir}/configure ${abe_top}/config.log | tr -s ' ' | cut -d ' ' -f 4-10| tr ' ' '%'`"\"
+	local configure=\""$(grep ${srcdir}/configure ${abe_top}/config.log | tr -s ' ' | cut -d ' ' -f 4-10| tr ' ' '%')"\"
 	popd
 	component_init ${component} TOOL=${component} ${branch:+BRANCH=${branch}} ${revision:+REVISION=${revision}} ${url:+URL=${url}} ${filespec:+FILESPEC=${filespec}} ${data:+DATE=${date}} ${srcdir:+SRCDIR=${srcdir}} ${configure:+CONFIGURE=${configure}}
 	if [ $? -ne 0 ]; then
@@ -545,7 +545,7 @@ collect_data ()
     fi
 
     if test -d ${local_builds}/${host}/${target}; then
-	local conf="`find ${local_builds}/${host}/${target} -name ${component}.conf | head -1`"
+	local conf="$(find ${local_builds}/${host}/${target} -name ${component}.conf | head -1)"
     else
 	local conf=
     fi
@@ -590,29 +590,29 @@ collect_data ()
 	eval ${component}_version="${latest}"
     fi
     eval "local latest=\${${component}_version}"
-    if test "`echo ${latest} | grep -c ${component}`" -eq 0; then
+    if test "$(echo ${latest} | grep -c ${component})" -eq 0; then
 	latest="${component}-${latest}"
     fi
-    if test `echo ${latest} | grep -c "\.tar"` -gt 0; then
-	if test "`echo ${latest} | grep -c 'http*://.*\.tar\.'`" -eq 0; then
-	    local url="`grep "^${component} " ${sources_conf} | tr -s ' ' | cut -d ' ' -f 2`"
+    if test $(echo ${latest} | grep -c "\.tar") -gt 0; then
+	if test "$(echo ${latest} | grep -c 'http*://.*\.tar\.')" -eq 0; then
+	    local url="$(grep "^${component} " ${sources_conf} | tr -s ' ' | cut -d ' ' -f 2)"
 	    local filespec="${latest}"
 	else
-	    local url="`dirname ${latest}`"
-	    local filespec="`basename ${latest}`"
+	    local url="$(dirname ${latest})"
+	    local filespec="$(basename ${latest})"
 	fi
 
-	local dir="`echo ${filespec} | sed -e 's:\.tar.*::'| tr '@' '_'`"
+	local dir="$(echo ${filespec} | sed -e 's:\.tar.*::'| tr '@' '_')"
     else
 	# If a manifest file has been imported, use those values
-	local filespec="`get_component_filespec ${component}`"
+	local filespec="$(get_component_filespec ${component})"
 	local gitinfo="${!version}"
-	local branch="`get_git_branch ${gitinfo}`"
+	local branch="$(get_git_branch ${gitinfo})"
 	if test x"${branch}" = x; then
 	    branch="master"
 	fi
-	local revision="`get_git_revision ${gitinfo}`"
-	local repo="`get_git_url ${gitinfo}`"
+	local revision="$(get_git_revision ${gitinfo})"
+	local repo="$(get_git_url ${gitinfo})"
 	local url=
 
 	case "${repo}" in
@@ -621,18 +621,18 @@ collect_data ()
 		url="${repo}" ;;
 	    *)
 		# look up full URL in sources.conf
-		url="`grep "^${repo}[[:space:]]" ${sources_conf} | head -n 1 | tr -s ' ' | cut -d ' ' -f 2`"
+		url="$(grep "^${repo}[[:space:]]" ${sources_conf} | head -n 1 | tr -s ' ' | cut -d ' ' -f 2)"
 	esac
 	if test x"{$url}" = x; then
 	    warning "${repo} not found in ${sources_conf}"
 	    return 1
 	fi
-	local filespec="`basename ${url}`"
-	local url="`dirname ${url}`"
+	local filespec="$(basename ${url})"
+	local url="$(dirname ${url})"
 	# Builds will fail if there is an @ in the build directory path.
 	# This is unfortunately, as @ is used to deliminate the revision
 	# string.
-	local fixbranch="`echo ${branch} | tr '/' '~' | tr '@' '_'`"
+	local fixbranch="$(echo ${branch} | tr '/' '~' | tr '@' '_')"
 	local dir=${filespec}${branch:+~${fixbranch}}${revision:+_rev_${revision}}
     fi
 
@@ -651,13 +651,13 @@ collect_data ()
     # Extract a few other data variables from the conf file and store them so
     # the conf file only needs to be sourced once.
     local confvars="${static_link:+STATICLINK=${static_link}}"
-    confvars="${confvars} ${default_makeflags:+MAKEFLAGS=\"`echo ${default_makeflags} | tr ' ' '%'`\"}"
-    confvars="${confvars} ${default_configure_flags:+CONFIGURE=\"`echo ${default_configure_flags} | tr ' ' '%'`\"}"
+    confvars="${confvars} ${default_makeflags:+MAKEFLAGS=\"$(echo ${default_makeflags} | tr ' ' '%')\"}"
+    confvars="${confvars} ${default_configure_flags:+CONFIGURE=\"$(echo ${default_configure_flags} | tr ' ' '%')\"}"
     if test x"${component}" = "xgcc"; then
-	confvars="${confvars} ${stage1_flags:+STAGE1=\"`echo ${stage1_flags} | tr ' ' '%'`\"}"
-	confvars="${confvars} ${stage2_flags:+STAGE2=\"`echo ${stage2_flags} | tr ' ' '%'`\"}"
+	confvars="${confvars} ${stage1_flags:+STAGE1=\"$(echo ${stage1_flags} | tr ' ' '%')\"}"
+	confvars="${confvars} ${stage2_flags:+STAGE2=\"$(echo ${stage2_flags} | tr ' ' '%')\"}"
     fi
-    confvars="${confvars} ${runtest_flags:+RUNTESTFLAGS=\"`echo ${runtest_flags} | tr ' ' '%'`\"}"
+    confvars="${confvars} ${runtest_flags:+RUNTESTFLAGS=\"$(echo ${runtest_flags} | tr ' ' '%')\"}"
     component_init ${component} TOOL=${component} ${branch:+BRANCH=${branch}} ${revision:+REVISION=${revision}} ${srcdir:+SRCDIR=${srcdir}} ${builddir:+BUILDDIR=${builddir}} ${filespec:+FILESPEC=${filespec}} ${url:+URL=${url}} ${confvars}
     if [ $? -ne 0 ]; then
         error "component_init failed"
