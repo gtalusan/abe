@@ -164,6 +164,7 @@ binary_toolchain()
 #    trace "$*"
 
     local rtag="$(create_release_tag gcc)"
+    local symlinks=
 
     if test x"${host}" != x"${build}"; then
 	local tag="${rtag}-i686-mingw32_${target}"
@@ -187,17 +188,21 @@ binary_toolchain()
 		return 1
 	    fi
 	done
+	# Windows does not support symlinks, and extractors do not
+	# always handle them correctly: dereference them to avoid
+	# problems.
+	symlinks=L
     fi
 
     # The manifest file records the versions of all of the components used to
     # build toolchain.
     dryrun "cp ${manifest} ${local_builds}/destdir/${host}/"
-    dryrun "rsync -avr ${local_builds}/destdir/${host}/* ${destdir}/"
+    dryrun "rsync -avr${symlinks} ${local_builds}/destdir/${host}/* ${destdir}/"
 
     if test x"${build}" != x"${target}"; then
 	# FIXME: link the sysroot into the toolchain tarball
 	dryrun "mkdir -p  ${destdir}/${target}/libc/"
-	dryrun "rsync -avr ${sysroots}/* ${destdir}/${target}/libc/"
+	dryrun "rsync -avr${symlinks} ${sysroots}/* ${destdir}/${target}/libc/"
     fi
 
     # Strip host binaries when packaging releases.
