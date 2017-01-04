@@ -552,12 +552,14 @@ collect_data ()
     if test x"${conf}" != x; then
 	test ${topdir}/config/${component}.conf -nt ${conf}
 	if test $? -gt 0; then
+	    notice "Sourcing config: ${topdir}/config/${component}.conf"
 	    . "${topdir}/config/${component}.conf"
 	else
-	    notice "Local ${component}.conf overriding defaults"
+	    notice "Sourcing local ${component}.conf, overriding defaults"
 	    . "${conf}"
 	fi
     else
+	notice "Sourcing config: ${topdir}/config/${component}.conf"
 	. "${topdir}/config/${component}.conf"
     fi
 
