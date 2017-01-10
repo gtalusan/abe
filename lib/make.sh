@@ -763,10 +763,15 @@ make_docs()
             # so we build both all targets and ignore the error.
 	    for subdir in bfd gas gold gprof ld
 	    do
-		dryrun "make SHELL=${bash_shell} ${make_flags} -w -C ${builddir}/${subdir} diststuff install-man 2>&1 | tee -a ${builddir}/makedoc.log"
-		if test $? -ne 0; then
-		    error "make docs failed in ${subdir}"
-		    return 1;
+		# Some configurations want to disable some of the
+		# components (eg gold), so ${build}/${subdir} may not
+		# exist. Skip them in this case.
+		if [ -d ${builddir}/${subdir} ]; then
+		    dryrun "make SHELL=${bash_shell} ${make_flags} -w -C ${builddir}/${subdir} diststuff install-man 2>&1 | tee -a ${builddir}/makedoc.log"
+		    if test $? -ne 0; then
+			error "make docs failed in ${subdir}"
+			return 1;
+		    fi
 		fi
 	    done
             dryrun "make SHELL=${bash_shell} ${make_flags} -w -C ${builddir} install-html install-info 2>&1 | tee -a ${builddir}/makedoc.log"
