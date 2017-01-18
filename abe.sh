@@ -23,16 +23,16 @@ usage()
   ${abe} [''| [--build {<package> [--stage {1|2}]|all}]
              [--ccache] [--check {all|glibc|gcc|gdb|binutils}]
              [--checkout {<package>[~branch][@revision]|all}]
-             [--disable {bootstrap|building|install|make_docs|schroot_test|update}]
+             [--disable {bootstrap|building|install|make_docs|parallel|schroot_test|update}]
              [--dryrun] [--dump]
-             [--enable {bootstrap|building|install|make_docs|schroot_test|update}]
+             [--enable {bootstrap|building|install|make_docs|parallel|schroot_test|update}]
              [--excludecheck {all|glibc|gcc|gdb|binutils}]
              [--extraconfig <tool>=<path>] [--extraconfigdir <dir>]
              [--force] [--help] [--host <host_triple>]
              [--infrastructure] [--interactive]
              [--manifest <manifest_file>]
              [--space <space needed>]
-             [--parallel] [--release <release_version_string>]
+             [--release <release_version_string>]
              [--set {arch|cpu|tune}=XXX]
              [--set {cflags|ldflags|runtestflags|makeflags}=XXX]
              [--set {languages}={c|c++|fortran|go|lto|objc|java|ada}]
@@ -138,7 +138,7 @@ OPTIONS
                        complete build as specified by the config/ .conf
                        files.
 
-  --disable {install|update|make_docs|building}
+  --disable {install|update|make_docs|building|parallel}
 
 		install
                         Disable the make install stage of packages, which
@@ -155,6 +155,10 @@ OPTIONS
                         using --tarbin, --tarsrc, or --tarball.
                         This is a debugging aid for developers, as it
                         assumes everything built correctly...
+
+                parallel
+                        Don't parallelize build. This is useful when
+                        troubleshooting a build.
                         
   --dryrun	Run as much of ${abe} as possible without doing any
 		actual configuration, building, or installing.
@@ -227,8 +231,6 @@ OPTIONS
 		area.
 		Defaults to enough space to bootstrap full toolchain.
 		Set to 0 to skip the space check.
-
-  --parallel	Set the make flags for parallel builds.
 
   --release <release_version_string>
 
@@ -873,9 +875,6 @@ while test $# -gt 0; do
 	--interactive)
 	    interactive=yes
 	    ;;
-	--parallel)
-	    parallel=yes
-            ;;
 	--release)
 	    check_directive release $2
             release=$2
@@ -989,6 +988,9 @@ while test $# -gt 0; do
 		    ;;
 		make_docs)
 		    make_docs="${value}"
+		    ;;
+		parallel)
+		    parallel="${value}"
 		    ;;
 		schroot_test)
 		    schroot_test="${value}"
