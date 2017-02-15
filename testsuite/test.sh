@@ -793,7 +793,7 @@ else
 fi
 cmp_makeflags=
 
-component_init dejagnu TOOL=dejagnu BRANCH=linaro SRCDIR=${local_snapshots}/dejagnu.git~linaro BUILDDIR=${local_builds}/dejagnu.git~linaro FILESPEC=dejagnu.git URL=http://git.linaro.org/git/toolchain
+component_init dejagnu TOOL=dejagnu BRANCH=linaro-local/stable SRCDIR=${local_snapshots}/dejagnu.git~linaro BUILDDIR=${local_builds}/dejagnu.git~linaro FILESPEC=dejagnu.git URL=http://git.linaro.org/git/toolchain
 
 checkout dejagnu
 if test $? -eq 0; then
