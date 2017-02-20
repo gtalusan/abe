@@ -3095,7 +3095,7 @@ test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
 test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
 
-CPUS="`getconf _NPROCESSORS_ONLN`"
+CPUS="`nproc --all`"
 
 LIBC="`getconf GNU_LIBC_VERSION`"
 

@@ -42,7 +42,7 @@ dnl AC_CANONICAL_BUILD
 dnl AC_CANONICAL_HOST
 
 dnl Get and store often used information on this build machine
-CPUS="`getconf _NPROCESSORS_ONLN`"
+CPUS="`nproc --all`"
 AC_SUBST(CPUS)
 LIBC="`getconf GNU_LIBC_VERSION`"
 AC_SUBST(LIBC)
