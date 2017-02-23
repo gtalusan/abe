@@ -217,6 +217,10 @@ start_schroot_sessions()
 	user="$(echo $test_container | grep "@" | sed -e "s/@.*//")"
 	machine="$(echo $test_container | sed -e "s/.*@//g" -e "s/:.*//g")"
 
+	if [ x"$user" = x"" ]; then
+	    user=$(ssh -p$schroot_port $machine whoami)
+	fi
+
 	schroot_make_opts="$schroot_make_opts ABE_TEST_CONTAINER_USER=$user ABE_TEST_CONTAINER_MACHINE=$machine"
     fi
 }
