@@ -41,7 +41,7 @@ usage()
              [--set {packages}={toolchain|gdb|sysroot}]
              [--snapshots <path>] [--tarball] [--tarbin] [--tarsrc]
              [--target {<target_triple>|''}]
-             [--testcontainer user@ipaddress:ssh_port]
+             [--testcontainer [user@]ipaddress:ssh_port]
              [--timeout <timeout_value>]
              [--usage]
              [{binutils|dejagnu|gcc|gmp|mpfr|mpc|eglibc|glibc|newlib}
@@ -325,12 +325,13 @@ OPTIONS
 			that ${abe} is running on then build the
 			toolchain as a cross toolchain.
 
-  --testcontainer <user>@<ipaddress>:<ssh_port>
+  --testcontainer [<user>@]<ipaddress>:<ssh_port>
 
 		Specify container to use for running cross-tests for
 		supported configurations.  The container should be
 		configured to allow passwordless ssh on port <ssh_port>
-		for <user> and "root" users.
+		for <user> and "root" users. If <user>@ is omitted,
+		use the same user name as the local one.
 
   --timeout <timeout_value>
 
