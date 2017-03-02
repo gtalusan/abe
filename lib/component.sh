@@ -526,7 +526,7 @@ read_conf_files ()
         done
         local var
 	# configs also have the following unused vars:
-	#    benchcmd benchcount benchlog configure installs
+	#    benchcmd benchcount benchlog configure
 	# configs set these, but they all set the same global variable which
 	# ends up being empty in all cases:
 	#    depends 
