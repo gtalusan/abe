@@ -273,7 +273,7 @@ OPTIONS
 
                 The default is to build the older GNU linker. This option
                 changes the linker to Gold, which is required for some C++
-                projects, including Andriod and Chromium.
+                projects, including Android and Chromium.
  
   --set		{package}={toolchain|gdb|sysroot}
                 This limits the default set of packages to the specified set.
