@@ -81,12 +81,10 @@ configure_build()
   
     local opts="$(get_component_configure ${component} $2)"
 
-    # Force static linking unless dynamic linking is specified
+    # Use static linking if component is configured for it
     local static="$(get_component_staticlink ${component})"
     if test x"${static}" = x"yes"; then
-	if test "$(echo ${component} | grep -c glibc)" -eq 0 -a "$(echo ${component} | grep -c gdbserver)" -eq 0; then
-	    local opts="${opts} --disable-shared --enable-static"
-	fi
+	local opts="${opts} --disable-shared --enable-static"
     fi
 
     # prefix is the root everything gets installed under.
