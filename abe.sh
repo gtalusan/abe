@@ -1117,6 +1117,11 @@ if [ "x${target_set}" = x1 -a ! -z "${do_manifest}" ]; then
   build_failure
 fi
 
+if [ "x${host}" != "x${target}" -a "x${bootstrap}" = x"yes" ]; then
+  error "host and target must be same for bootstrap"
+  build_failure
+fi
+
 if [ "x${component_version_set}" = x1 -a ! -z "${do_manifest}" ]; then
   error "setting component versions with --manifest is not supported"
   build_failure
