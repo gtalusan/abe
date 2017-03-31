@@ -646,7 +646,7 @@ check_directive()
 }
 
 # Some switches allow an optional following directive. We need to make sure
-# they don't parse the -- of the following switch.  If there isnt a following
+# they don't parse the -- of the following switch.  If there isn't a following
 # directive this function will echo the default ($5).  This function can't
 # distinguish whether --foo--bar is valid, so it will return 1 in this case
 # and consume the --bar as part of --foo.
