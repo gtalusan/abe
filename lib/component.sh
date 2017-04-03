@@ -581,6 +581,7 @@ read_conf_files ()
 {
     local conf
     (
+        set -eu
         for conf in "$@"; do
 	    if ! test -f "${conf}"; then
 	        error "Warning: config file does not exist: ${conf}"
