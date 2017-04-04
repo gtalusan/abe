@@ -282,9 +282,11 @@ get_component_list()
     if [ x"${manifest}" != x"" ]; then
         local i
         for i in ${builds}; do
-            local match=${i/stage[12]/gcc}
-            if ! echo "${toolchain[*]}" | grep -q "${match}"; then
-                builds=$(echo "${builds}" | sed -e "s/\<${i}\>//")
+            local match=${i}
+            match=${match/stage[12]/gcc}
+            match=${match/libc/${clibrary}}
+            if ! echo "${toolchain[*]}" | grep -q "\\<${match}\\>"; then
+                builds=$(echo "${builds}" | sed -e "s/\\<${i}\\>//")
             fi
         done
     fi
