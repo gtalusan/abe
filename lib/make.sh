@@ -622,7 +622,7 @@ make_check()
     if test x"${parallel}" = x"yes"; then
 	local make_flags
 	case "${target}" in
-	    "$build"|*"-elf"*) make_flags="${make_flags} -j ${cpus}" ;;
+	    "$build"|*"-elf"*|armeb*) make_flags="${make_flags} -j ${cpus}" ;;
 	    # Double parallelization when running tests on remote boards
 	    # to avoid host idling when waiting for the board.
 	    *) make_flags="${make_flags} -j $((2*${cpus}))" ;;
