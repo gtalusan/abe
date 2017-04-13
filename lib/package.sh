@@ -39,7 +39,7 @@ sanitize()
     pushd ./ >/dev/null
     cd $1
     if test "$(git status | grep -c "nothing to commit, working directory clean")" -gt 0; then
-	error "uncommited files in $1! Commit files before releasing."
+	error "uncommitted files in $1! Commit files before releasing."
 	#return 1
     fi
     popd >/dev/null
