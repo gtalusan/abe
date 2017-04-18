@@ -79,314 +79,125 @@ component_init ()
     return 0
 }
 
-# Accessor functions for the data structure to set "private" data. This is a crude
-# approximation of an object oriented API for this data structure. Each of the setters
-# takes two arguments, which are:
+# Accessor functions for the data structure to set "private" data. This is a
+# crude approximation of an object oriented API for this data structure. Each
+# of the setters takes two arguments, which are:
 #
-# $1 - The name of the data structure, which is based on the toolname, ie... gcc, gdb, etc...
-# $2 - The value to assign the data field.
+# $1 - The name of the data structure, which is based on the toolname, ie...
+# gcc, gdb, etc...  $2 - The value to assign the data field.
 #
 # Returns 0 on success, 1 on error
 #
 set_component_url ()
 {
-#    trace "$*"
-
-    local component=$1
-    declare -p ${component} 2>&1 > /dev/null
-    if test $? -gt 0; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval ${component}[URL]="$2"
-    fi
-
-    return 0
+    __set_component_GENERIC URL "$@"
 }
 
 set_component_revision ()
 {
-#    trace "$*"
-
-    local component=$1
-    declare -p ${component} 2>&1 > /dev/null
-    if test $? -gt 0; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval ${component}[REVISION]="$2"
-    fi
-
-    return 0
+    __set_component_GENERIC REVISION "$@"
 }
 
 set_component_srcdir ()
 {
-#    trace "$*"
-
-    local component=$1
-    declare -p ${component} 2>&1 > /dev/null
-    if test $? -gt 0; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval ${component}[SRCDIR]="$2"
-    fi
-
-    return 0
+    __set_component_GENERIC SRCDIR "$@"
 }
 
 set_component_builddir ()
 {
-#    trace "$*"
-
-    local component=$1
-    declare -p ${component} 2>&1 > /dev/null
-    if test $? -gt 0; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval ${component}[BUILDDIR]="$2"
-    fi
-
-    return 0
+    __set_component_GENERIC BUILDDIR "$@"
 }
 
 set_component_filespec ()
 {
-#    trace "$*"
-
-    local component=$1
-    declare -p ${component} 2>&1 > /dev/null
-    if test $? -gt 0; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval ${component}[FILESPEC]="$2"
-    fi
-
-    return 0
+    __set_component_GENERIC FILESPEC "$@"
 }
 
 set_component_branch ()
 {
-#    trace "$*"
-
-    local component=$1
-    declare -p ${component} 2>&1 > /dev/null
-    if test $? -gt 0; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval ${component}[BRANCH]="$2"
-    fi
-
-    return 0
+    __set_component_GENERIC BRANCH "$@"
 }
 
 set_component_makeflags ()
 {
-#    trace "$*"
-
-    local component=$1
-    declare -p ${component} 2>&1 > /dev/null
-    if test $? -gt 0; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval ${component}[MAKEFLAGS]="$2"
-    fi
-
-    return 0
+    __set_component_GENERIC MAKEFLAGS "$@"
 }
 
 set_component_configure ()
 {
-#    trace "$*"
-
-    local component=$1
-    declare -p ${component} 2>&1 > /dev/null
-    if test $? -gt 0; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval ${component}[CONFIGURE]="$2"
-    fi
-
-    return 0
+    __set_component_GENERIC CONFIGURE "$@"
 }
 
 set_component_md5sum ()
 {
-#    trace "$*"
-
-    local component=$1
-    declare -p ${component} 2>&1 > /dev/null
-    if test $? -gt 0; then
-       warning "${component} does not exist!"
-       return 1
-    else
-       eval ${component}[MD5SUM]="$2"
-    fi
-
-    return 0
+    __set_component_GENERIC MD5SUM "$@"
 }
 
 set_component_mingw_extraconf ()
 {
-#    trace "$*"
-
-    local component=$1
-    declare -p ${component} 2>&1 > /dev/null
-    if test $? -gt 0; then
-       warning "${component} does not exist!"
-       return 1
-    else
-       eval ${component}[MINGWEXTRACONF]="$2"
-    fi
-
-    return 0
+    __set_component_GENERIC MINGWEXTRACONF "$@"
 }
 
 set_component_mingw_only ()
 {
-#    trace "$*"
-
-    local component=$1
-    declare -p ${component} 2>&1 > /dev/null
-    if test $? -gt 0; then
-       warning "${component} does not exist!"
-       return 1
-    else
-       eval ${component}[MINGWONLY]="$2"
-    fi
-
-    return 0
+    __set_component_GENERIC MINGWONLY "$@"
 }
 
-# BRANCH is parsed from the config file for each component, but can be redefined
-# on the command line at runtime.
+# BRANCH is parsed from the config file for each component, but can be
+# redefined on the command line at runtime.
 #
-# These next few fields are also from the config file for each component, but as
-# defaults, they aren't changed from the command line, so don't have set_component_*
-# functions.
+# These next few fields are also from the config file for each component, but
+# as defaults, they aren't changed from the command line, so don't have
+# set_component_* functions.
 #
 # MAKEFLAGS
 # STATICLINK
 # CONFIGURE
 # RUNTESTFLAGS
 
-# Accessor functions for the data structure to get "private" data. This is a crude
-# approximation of an object oriented API for this data structure. All of the getters
-# take only one argument, which is the toolname, ie... gcc, gdb, etc...
+# Accessor functions for the data structure to get "private" data. This is a
+# crude approximation of an object oriented API for this data structure. All of
+# the getters take only one argument, which is the toolname, ie... gcc, gdb,
+# etc...
 #
-# $1 - The name of the data structure, which is based on the toolname, ie... gcc, gdb, etc...
+# $1 - The name of the data structure, which is based on the toolname, ie...
+# gcc, gdb, etc...
 #
 # Returns 0 on success, 1 on error, and the value is returned as a string.
 #
 get_component_url ()
 {
-#    trace "$*"
-
-    local component=$1
-    if test "${component:+set}" != "set"; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval "echo \${${component}[URL]}"
-    fi
-
-    return 0
+    __get_component_GENERIC URL "$@"
 }
 
 get_component_revision ()
 {
-#    trace "$*"
-
-    local component=$1
-    if test "${component:+set}" != "set"; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval "echo \${${component}[REVISION]}"
-    fi
-
-    return 0
+    __get_component_GENERIC REVISION "$@"
 }
 
 get_component_srcdir ()
 {
-#    trace "$*"
-
-    local component=$1
-    if test "${component:+set}" != "set"; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval "echo \${${component}[SRCDIR]}"
-    fi
-
-    return 0
+    __get_component_GENERIC SRCDIR "$@"
 }
 
 get_component_builddir ()
 {
-#    trace "$*"
-
-    local component=$1
-    if test "${component:+set}" != "set"; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval "echo \${${component}[BUILDDIR]}"
-    fi
-
-    return 0
+    __get_component_GENERIC BUILDDIR "$@"
 }
 
 get_component_filespec ()
 {
-#    trace "$*"
-
-    local component=$1
-    if test "${component:+set}" != "set"; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval "echo \${${component}[FILESPEC]}"
-    fi
-
-    return 0
+    __get_component_GENERIC FILESPEC "$@"
 }
 
 get_component_branch ()
 {
-#    trace "$*"
-
-    local component=$1
-    if test "${component:+set}" != "set"; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval "echo \${${component}[BRANCH]}"
-    fi
-
-    return 0
+    __get_component_GENERIC BRANCH "$@"
 }
 
 get_component_makeflags ()
 {
-#    trace "$*"
-
-    local component=$1
-    if test "${component:+set}" != "set"; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval "echo \${${component}[MAKEFLAGS]}"
-    fi
-
-    return 0
+    __get_component_GENERIC MAKEFLAGS "$@"
 }
 
 get_component_configure ()
@@ -416,78 +227,28 @@ get_component_configure ()
 
 get_component_md5sum ()
 {
-#    trace "$*"
-
-    local component=$1
-    if test "${component:+set}" != "set"; then
-       warning "${component} does not exist!"
-       return 1
-    else
-       eval "echo \${${component}[MD5SUM]}"
-    fi
-
-    return 0
+    __get_component_GENERIC MD5SUM "$@"
 }
 
 get_component_mingw_extraconf ()
 {
-#    trace "$*"
-
-    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
-    if test "${component:+set}" != "set"; then
-       warning "${component} does not exist!"
-       return 1
-    else
-       eval "echo \${${component}[MINGWEXTRACONF]}"
-    fi
-
-    return 0
+    __get_component_GENERIC MINGWEXTRACONF "$@"
 }
 
 get_component_mingw_only ()
 {
-#    trace "$*"
-
-    local component="$(echo $1 | sed -e 's:-[0-9a-z\.\-]*::' -e 's:\.git.*::')"
-    if test "${component:+set}" != "set"; then
-       warning "${component} does not exist!"
-       return 1
-    else
-       eval "echo \${${component}[MINGWONLY]}"
-    fi
-
-    return 0
+    __get_component_GENERIC MINGWONLY "$@"
 }
 
 
 get_component_staticlink ()
 {
-#    trace "$*"
-
-    local component=$1
-    if test "${component:+set}" != "set"; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval "echo \${${component}[STATICLINK]}"
-    fi
-
-    return 0
+    __get_component_GENERIC STATICLINK "$@"
 }
 
 get_component_runtestflags ()
 {
-#    trace "$*"
-
-    local component=$1
-    if test "${component:+set}" != "set"; then
-	warning "${component} does not exist!"
-	return 1
-    else
-	eval "echo \${${component}[RUNTESTFLAGS]}"
-    fi
-
-    return 0
+    __get_component_GENERIC RUNTESTFLAGS "$@"
 }
 
 # Note that this function is GCC specific.
@@ -761,6 +522,40 @@ collect_data ()
     if [ $? -ne 0 ]; then
         error "component_init failed"
         return 1
+    fi
+
+    return 0
+}
+
+# internal function to implement set_component_*
+__set_component_GENERIC ()
+{
+    local field=$1
+    local component=$2
+    local value=$3
+    declare -p ${component} 2>&1 >/dev/null
+    if [ "${component:+set}" = "set" ]; then
+	eval ${component}[${field}]="$value"
+    else
+	warning "${component} does not exist"
+	return 1
+    fi
+
+    return 0
+}
+
+# internal function to implement get_component_*
+__get_component_GENERIC ()
+{
+#    trace "$*"
+
+    local field=$1
+    local component=$2
+    if [ "${component:+set}" = "set" ]; then
+	eval "echo \${${component}[${field}]}"
+    else
+	warning "${component} does not exist"
+	return 1
     fi
 
     return 0
