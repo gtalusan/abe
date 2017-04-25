@@ -922,7 +922,7 @@ record_sum_files()
     # files/directories could have any weird chars in, so take care to
     # escape them correctly
     local i
-    for i in $(find "${builddir}" ${findargs} -exec printf '%q\n' {} ';' ); do
+    for i in $(find "${builddir}" ${findargs} -exec bash -c 'printf "$@"' bash '%q\n' {} ';' ); do
 	record_artifact "dj_sum_${component}${2:+-$2}" "${i}"
     done
     notice "Finding artifacts took $((SECONDS-time)) seconds"
