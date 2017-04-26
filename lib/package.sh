@@ -366,7 +366,7 @@ manifest()
     local tmpfile="/tmp/mani$$.txt"
     for i in ${toolchain[*]}; do
 	local component="$i"
-	# ABE build data goes in the documentation sxection
+	# ABE build data goes in the documentation section
 	if test x"${component}" = x"abe"; then
 	    echo "${component}_url=$(get_component_url ${component})" > ${tmpfile}
 	    echo "${component}_branch=branch=$(get_component_branch ${component})" >> ${tmpfile}
